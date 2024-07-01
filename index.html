@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>アレルギークイズ</title>
+  <title>アレルギー4型クイズ</title>
   <style>
     .quiz-container {
       max-width: 600px;
@@ -41,11 +41,23 @@
       margin-top: 20px;
       text-align: center;
     }
+
+    #attendance-button {
+      display: block; 
+      margin: 20px auto; 
+      padding: 10px 20px;
+      font-size: 16px;
+      color: #fff;
+      background-color: #4CAF50; 
+      border: none;
+      border-radius: 5px;
+      cursor: pointer; 
+    }
   </style>
 </head>
 <body>
   <div class="quiz-container">
-    <h1>アレルギークイズ</h1>
+    <h1>アレルギー4型クイズ</h1>
     <div id="name-form">
       <input type="text" id="user-name" placeholder="あなたの名前を入力してください">
       <button onclick="startQuiz()">クイズを開始</button>
@@ -57,6 +69,11 @@
     </div>
     <div class="progress" style="display: none;">問題 <span id="current">1</span> / <span id="total">10</span></div>
     <div id="result" style="display: none;"></div>
+    <div id="attendance-link" style="display: none;">
+      <h2>出席確認</h2>
+      <p>以下のボタンから出席フォームに回答してください。</p>
+      <button id="attendance-button" onclick="openAttendanceForm()">出席フォームを開く</button>
+    </div>
   </div>
 
   <script>
@@ -110,10 +127,10 @@
         explanation: "IV型遅延型アレルギー反応が現れるまでの一般的な時間は24-72時間後です。"
       },
       {
-        question: "補体系の活性化が重要な役割を果たすアレルギー型はどれですか？",
+        question: "補体系の活性化が重要な役割を果たすアレルギー型はどれですか？（複数選択可）",
         options: ["I型", "II型", "III型", "IV型"],
-        answer: 0, 
-        explanation: "補体系の活性化が重要な役割を果たすアレルギー型はIです。"
+        answer: [0, 2], 
+        explanation: "補体系の活性化が重要な役割を果たすアレルギー型はII型とIII型です。"
       },
       {
         question: "アレルギー性鼻炎は主にどの型のアレルギー反応に分類されますか？",
@@ -124,7 +141,7 @@
     ];
 
     let currentQuestion = 0;
-    let correctAnswers = 0; // 正答数を保持する変数を追加
+    let correctAnswers = 0;
 
     function startQuiz() {
       const userName = document.getElementById('user-name').value;
@@ -132,7 +149,7 @@
         alert('名前を入力してください。');
         return;
       }
-      correctAnswers = 0; // クイズ開始時に正答数をリセット
+      correctAnswers = 0;
       document.getElementById('name-form').style.display = 'none';
       document.getElementById('quiz').style.display = 'block';
       document.querySelector('.navigation').style.display = 'flex';
@@ -189,7 +206,7 @@
 
       const answerDiv = document.getElementById(`answer${currentQuestion}`);
       if (isCorrect) {
-        correctAnswers++; // 正解の場合のみカウントアップ
+        correctAnswers++;
       }
       answerDiv.innerHTML = isCorrect ? "正解です！" : `不正解です。正解は: ${Array.isArray(question.answer) ? question.options.filter((_, i) => question.answer.includes(i)).join(', ') : question.options[question.answer]}`;
       answerDiv.innerHTML += `<p>${question.explanation}</p>`;
@@ -215,10 +232,11 @@
 
     function showResult() {
       const userName = document.getElementById('user-name').value;
+      const percentage = (correctAnswers / quizData.length * 100).toFixed(2);
       const resultHtml = `
         <h2>${userName}さんの結果</h2>
         <p>正解数: ${correctAnswers} / ${quizData.length}</p>
-        <p>正答率: ${(correctAnswers / quizData.length * 100).toFixed(2)}%</p>
+        <p>正答率: ${percentage}%</p>
         <button onclick="resetQuiz()">もう一度挑戦する</button>
       `;
       document.getElementById('result').innerHTML = resultHtml;
@@ -226,16 +244,24 @@
       document.getElementById('quiz').style.display = 'none';
       document.querySelector('.navigation').style.display = 'none';
       document.querySelector('.progress').style.display = 'none';
+
+      // 出席フォームへのボタンを表示
+      document.getElementById('attendance-link').style.display = 'block';
     }
 
     function resetQuiz() {
       currentQuestion = 0;
-      correctAnswers = 0; // リセット時に正答数もリセット
+      correctAnswers = 0;
       document.getElementById('result').style.display = 'none';
+      document.getElementById('attendance-link').style.display = 'none'; 
       document.getElementById('name-form').style.display = 'block';
       document.getElementById('user-name').value = '';
       Array.from(document.querySelectorAll('input[type="radio"]:checked, input[type="checkbox"]:checked')).forEach(el => el.checked = false);
       document.querySelectorAll('.answer').forEach(el => el.innerHTML = '');
+    }
+
+    function openAttendanceForm() {
+      window.open("https://docs.google.com/forms/d/e/1FAIpQLSexI-Zyj6AlGAwC2sd02JlijeY8Na22Xj_Cv6C5vqZi_PSBIg/viewform", "_blank");
     }
   </script>
 </body>
