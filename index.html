@@ -1,150 +1,199 @@
-はい、10問のクイズを作成し、名前を入れるフォームを追加することは可能です。以下に10問のクイズデータと、名前入力フォームを追加したHTMLコードの変更点を示します。
-
-まず、quizDataを10問に拡張します：
-
-```javascript
-const quizData = [
-    // 既存の2問はそのまま
-    {
-        question: "III型免疫複合体型アレルギーにおいて、主な病態を引き起こす要因は何ですか？",
-        options: ["T細胞の過剰活性化", "抗原抗体複合体の沈着", "肥満細胞の脱顆粒", "NK細胞の活性化"],
-        answer: 1,
-        explanation: "III型免疫複合体型アレルギーでは、抗原と抗体が結合した免疫複合体が血管壁などの組織に沈着し、補体系を活性化させることで炎症反応を引き起こします。"
-    },
-    {
-        question: "IV型遅延型アレルギーの特徴として正しいものはどれですか？",
-        options: ["IgE抗体が主要な役割を果たす", "反応は数分以内に現れる", "T細胞が中心的な役割を果たす", "補体系の活性化が主な機序である"],
-        answer: 2,
-        explanation: "IV型遅延型アレルギーは細胞性免疫によるもので、T細胞が中心的な役割を果たします。抗原特異的なT細胞が活性化され、サイトカインを放出することで炎症反応を引き起こします。"
-    },
-    {
-        question: "I型即時型アレルギーの症状として最も典型的なものはどれですか？",
-        options: ["発熱", "蕁麻疹", "関節痛", "倦怠感"],
-        answer: 1,
-        explanation: "蕁麻疹はI型即時型アレルギー反応の典型的な症状の一つです。IgE抗体を介した反応により、肥満細胞からヒスタミンなどの化学伝達物質が放出され、皮膚の発赤や膨疹を引き起こします。"
-    },
-    {
-        question: "II型細胞障害型アレルギーにおいて、主に関与する抗体はどれですか？（複数選択可）",
-        options: ["IgE", "IgG", "IgA", "IgM"],
-        answer: [1, 3],
-        explanation: "II型細胞障害型アレルギーでは、主にIgGとIgM抗体が関与します。これらの抗体が細胞表面の抗原と結合し、補体系の活性化や抗体依存性細胞傷害を引き起こします。"
-    },
-    {
-        question: "III型免疫複合体型アレルギーの例として正しいものはどれですか？",
-        options: ["アナフィラキシーショック", "結核反応", "血清病", "グッドパスチャー症候群"],
-        answer: 2,
-        explanation: "血清病はIII型免疫複合体型アレルギーの典型例です。異種タンパク質に対する抗体が形成され、これらが抗原と結合して免疫複合体を形成し、組織に沈着することで炎症反応を引き起こします。"
-    },
-    {
-        question: "IV型遅延型アレルギー反応が現れるまでの一般的な時間は？",
-        options: ["数分以内", "1-2時間後", "6-12時間後", "24-72時間後"],
-        answer: 3,
-        explanation: "IV型遅延型アレルギー反応は、抗原暴露後24-72時間後に最大となります。これはT細胞の活性化と炎症性サイトカインの産生に時間がかかるためです。"
-    },
-    {
-        question: "補体系の活性化が重要な役割を果たすアレルギー型はどれですか？（複数選択可）",
-        options: ["I型", "II型", "III型", "IV型"],
-        answer: [1, 2],
-        explanation: "補体系の活性化は、II型細胞障害型アレルギーとIII型免疫複合体型アレルギーで重要な役割を果たします。II型では補体が細胞溶解を引き起こし、III型では免疫複合体の除去と炎症反応の誘発に関与します。"
-    },
-    {
-        question: "アレルギー性鼻炎は主にどの型のアレルギー反応に分類されますか？",
-        options: ["I型", "II型", "III型", "IV型"],
-        answer: 0,
-        explanation: "アレルギー性鼻炎は典型的なI型即時型アレルギー反応です。花粉などのアレルゲンがIgE抗体と結合し、肥満細胞からヒスタミンなどの化学伝達物質が放出されることで、くしゃみ、鼻水、鼻づまりなどの症状が引き起こされます。"
-    }
-];
-```
-
-次に、名前入力フォームを追加するために、HTMLとJavaScriptを以下のように修正します：
-
-1. HTML部分に名前入力フォームを追加：
-
-```html
-<div class="quiz-container">
-    <h1>アレルギー4型クイズ</h1>
-    <div id="name-form">
-        <input type="text" id="user-name" placeholder="あなたの名前を入力してください">
-        <button onclick="startQuiz()">クイズを開始</button>
-    </div>
-    <div id="quiz" style="display: none;"></div>
-    <div class="navigation" style="display: none;">
-        <button id="prev">前の問題</button>
-        <button id="next">次の問題</button>
-    </div>
-    <div class="progress" style="display: none;">問題 <span id="current">1</span> / <span id="total">10</span></div>
-    <div id="result" style="display: none;"></div>
-</div>
-```
-
-2. JavaScript部分に以下の関数を追加：
-
-```javascript
-function startQuiz() {
-    const userName = document.getElementById('user-name').value;
-    if (userName.trim() === '') {
-        alert('名前を入力してください。');
-        return;
-    }
-    document.getElementById('name-form').style.display = 'none';
-    document.getElementById('quiz').style.display = 'block';
-    document.querySelector('.navigation').style.display = 'flex';
-    document.querySelector('.progress').style.display = 'block';
-    loadQuestion();
-}
-
-function showResult() {
-    const userName = document.getElementById('user-name').value;
-    const correctAnswers = quizData.filter((q, i) => 
-        document.querySelector(`input[name="answer${i}"]:checked`)?.value == q.answer
-    ).length;
-    const resultHtml = `
-        <h2>${userName}さんの結果</h2>
-        <p>正解数: ${correctAnswers} / ${quizData.length}</p>
-        <p>正答率: ${(correctAnswers / quizData.length * 100).toFixed(2)}%</p>
-    `;
-    document.getElementById('result').innerHTML = resultHtml;
-    document.getElementById('result').style.display = 'block';
-    document.getElementById('quiz').style.display = 'none';
-    document.querySelector('.navigation').style.display = 'none';
-    document.querySelector('.progress').style.display = 'none';
-}
-
-// loadQuestion関数を修正
-function loadQuestion() {
-    const question = quizData[currentQuestion];
-    let quizHtml = `
-        <div class="question">
-            <h2>問題 ${currentQuestion + 1}</h2>
-            <p>${question.question}</p>
-            <ul class="options">
-                ${question.options.map((option, index) => `
-                    <li>
-                        <label>
-                            <input type="radio" name="answer${currentQuestion}" value="${index}">
-                            ${option}
-                        </label>
-                    </li>
-                `).join("")}
-            </ul>
-            <button onclick="checkAnswer()">答えを確認</button>
-            <div id="answer" class="answer"></div>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アレルギー4型クイズ</title>
+    <style>
+        .quiz-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .options li {
+            margin-bottom: 10px;
+        }
+        .answer {
+            margin-top: 20px;
+            color: green;
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .progress {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>アレルギー4型クイズ</h1>
+        <div id="name-form">
+            <input type="text" id="user-name" placeholder="あなたの名前を入力してください">
+            <button onclick="startQuiz()">クイズを開始</button>
         </div>
-    `;
-    document.getElementById("quiz").innerHTML = quizHtml;
-    document.getElementById("current").textContent = currentQuestion + 1;
-    document.getElementById("total").textContent = quizData.length;
-}
+        <div id="quiz" style="display: none;"></div>
+        <div class="navigation" style="display: none;">
+            <button id="prev" onclick="prevQuestion()">前の問題</button>
+            <button id="next" onclick="nextQuestion()">次の問題</button>
+        </div>
+        <div class="progress" style="display: none;">問題 <span id="current">1</span> / <span id="total">10</span></div>
+        <div id="result" style="display: none;"></div>
+    </div>
 
-// 最後の問題の後に結果を表示するよう修正
-document.getElementById("next").addEventListener("click", () => {
-    if (currentQuestion < quizData.length - 1) {
-        currentQuestion++;
-        loadQuestion();
-    } else if (currentQuestion === quizData.length - 1) {
-        showResult();
-    }
-});
-```
+    <script>
+        const quizData = [
+            // 既存の2問はそのまま
+            {
+                question: "III型免疫複合体型アレルギーにおいて、主な病態を引き起こす要因は何ですか？",
+                options: ["T細胞の過剰活性化", "抗原抗体複合体の沈着", "肥満細胞の脱顆粒", "NK細胞の活性化"],
+                answer: 1,
+                explanation: "III型免疫複合体型アレルギーでは、抗原と抗体が結合した免疫複合体が血管壁などの組織に沈着し、補体系を活性化させることで炎症反応を引き起こします。"
+            },
+            {
+                question: "IV型遅延型アレルギーの特徴として正しいものはどれですか？",
+                options: ["IgE抗体が主要な役割を果たす", "反応は数分以内に現れる", "T細胞が中心的な役割を果たす", "補体系の活性化が主な機序である"],
+                answer: 2,
+                explanation: "IV型遅延型アレルギーは細胞性免疫によるもので、T細胞が中心的な役割を果たします。抗原特異的なT細胞が活性化され、サイトカインを放出することで炎症反応を引き起こします。"
+            },
+            {
+                question: "I型即時型アレルギーの症状として最も典型的なものはどれですか？",
+                options: ["発熱", "蕁麻疹", "関節痛", "倦怠感"],
+                answer: 1,
+                explanation: "蕁麻疹はI型即時型アレルギー反応の典型的な症状の一つです。IgE抗体を介した反応により、肥満細胞からヒスタミンなどの化学伝達物質が放出され、皮膚の発赤や膨疹を引き起こします。"
+            },
+            {
+                question: "II型細胞障害型アレルギーにおいて、主に関与する抗体はどれですか？（複数選択可）",
+                options: ["IgE", "IgG", "IgA", "IgM"],
+                answer: [1, 3],
+                explanation: "II型細胞障害型アレルギーでは、主にIgGとIgM抗体が関与します。これらの抗体が細胞表面の抗原と結合し、補体系の活性化や抗体依存性細胞傷害を引き起こします。"
+            },
+            {
+                question: "III型免疫複合体型アレルギーの例として正しいものはどれですか？",
+                options: ["アナフィラキシーショック", "結核反応", "血清病", "グッドパスチャー症候群"],
+                answer: 2,
+                explanation: "血清病はIII型免疫複合体型アレルギーの典型例です。異種タンパク質に対する抗体が形成され、これらが抗原と結合して免疫複合体を形成し、組織に沈着することで炎症反応を引き起こします。"
+            },
+            {
+                question: "IV型遅延型アレルギー反応が現れるまでの一般的な時間は？",
+                options: ["数分以内", "1-2時間後", "6-12時間後", "24-72時間後"],
+                answer: 3,
+                explanation: "IV型遅延型アレルギー反応は、抗原暴露後24-72時間後に最大となります。これはT細胞の活性化と炎症性サイトカインの産生に時間がかかるためです。"
+            },
+            {
+                question: "補体系の活性化が重要な役割を果たすアレルギー型はどれですか？（複数選択可）",
+                options: ["I型", "II型", "III型", "IV型"],
+                answer: [1, 2],
+                explanation: "補体系の活性化は、II型細胞障害型アレルギーとIII型免疫複合体型アレルギーで重要な役割を果たします。II型では補体が細胞溶解を引き起こし、III型では免疫複合体の除去と炎症反応の誘発に関与します。"
+            },
+            {
+                question: "アレルギー性鼻炎は主にどの型のアレルギー反応に分類されますか？",
+                options: ["I型", "II型", "III型", "IV型"],
+                answer: 0,
+                explanation: "アレルギー性鼻炎は典型的なI型即時型アレルギー反応です。花粉などのアレルゲンがIgE抗体と結合し、肥満細胞からヒスタミンなどの化学伝達物質が放出されることで、くしゃみ、鼻水、鼻づまりなどの症状が引き起こされます。"
+            }
+        ];
 
-これらの変更により、10問のクイズと名前入力フォームが追加されます。ユーザーは名前を入力してからクイズを開始し、すべての問題に答えた後に結果が表示されます。
+        let currentQuestion = 0;
+
+        function startQuiz() {
+            const userName = document.getElementById('user-name').value;
+            if (userName.trim() === '') {
+                alert('名前を入力してください。');
+                return;
+            }
+            document.getElementById('name-form').style.display = 'none';
+            document.getElementById('quiz').style.display = 'block';
+            document.querySelector('.navigation').style.display = 'flex';
+            document.querySelector('.progress').style.display = 'block';
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const question = quizData[currentQuestion];
+            let quizHtml = `
+                <div class="question">
+                    <h2>問題 ${currentQuestion + 1}</h2>
+                    <p>${question.question}</p>
+                    <ul class="options">
+                        ${question.options.map((option, index) => `
+                            <li>
+                                <label>
+                                    <input type="radio" name="answer${currentQuestion}" value="${index}">
+                                    ${option}
+                                </label>
+                            </li>
+                        `).join("")}
+                    </ul>
+                    <button onclick="checkAnswer()">答えを確認</button>
+                    <div id="answer" class="answer"></div>
+                </div>
+            `;
+            document.getElementById("quiz").innerHTML = quizHtml;
+            document.getElementById("current").textContent = currentQuestion + 1;
+            document.getElementById("total").textContent = quizData.length;
+        }
+
+        function checkAnswer() {
+            const question = quizData[currentQuestion];
+            const selectedOption = document.querySelector(`input[name="answer${currentQuestion}"]:checked`);
+            const answerDiv = document.getElementById("answer");
+            if (!selectedOption) {
+                alert('回答を選択してください。');
+                return;
+            }
+            const isCorrect = selectedOption.value == question.answer;
+            answerDiv.innerHTML = isCorrect ? "正解です！" : `不正解です。正解は: ${question.options[question.answer]}`;
+            answerDiv.style.color = isCorrect ? "green" : "red";
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                loadQuestion();
+            } else if (currentQuestion === quizData.length - 1) {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            const userName = document.getElementById('user-name').value;
+            const correctAnswers = quizData.filter((q, i) => 
+                document.querySelector(`input[name="answer${i}"]:checked`)?.value == q.answer
+            ).length;
+            const resultHtml = `
+                <h2>${userName}さんの結果</h2>
+                <p>正解数: ${correctAnswers} / ${quizData.length}</p>
+                <p>正答率: ${(correctAnswers / quizData.length * 100).toFixed(2)}%</p>
+            `;
+            document.getElementById('result').innerHTML = resultHtml;
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('quiz').style.display = 'none';
+            document.querySelector('.navigation').style.display = 'none';
+            document.querySelector('.progress').style.display = 'none';
+        }
+
+        document.getElementById("next").addEventListener("click", nextQuestion);
+        document.getElementById("prev").addEventListener("click", prevQuestion);
+    </script>
+</body>
+</html>
