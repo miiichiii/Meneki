@@ -50,9 +50,13 @@
       border-radius: 5px;
       cursor: pointer; 
     }
+    #show-answer-button {
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
+
   <div class="quiz-container">
     <h1>アレルギー4型クイズ</h1>
     <div id="name-form">
@@ -60,7 +64,7 @@
       <button onclick="startQuiz()">クイズを開始</button>
     </div>
     <div id="quiz" style="display: none;">
-        </div>
+    </div>
     <div class="navigation" style="display: none;">
       <button id="prev" onclick="prevQuestion()">前の問題</button>
       <button id="next" onclick="nextQuestion()">次の問題</button>
@@ -76,259 +80,288 @@
 
   <div class="quiz-container" id="immunity-questions">
     <h1>免疫学習問題集</h1>
-    <div class="question">
-        <h2>問題1</h2>
-        <p>自然免疫に関与する細胞はどれですか？</p>
-        <ul class="options">
-            <li>a) B細胞</li>
-            <li>b) T細胞</li>
-            <li>c) マクロファージ</li>
-            <li>d) 形質細胞</li>
-        </ul>
-        <p class="answer">答え: c) マクロファージ</p>
+    <div id="questions-container">
+      <!-- 問題はここに表示されます -->
     </div>
-    <div class="question">
-        <h2>問題2</h2>
-        <p>獲得免疫に関与する細胞はどれですか？（複数選択可）</p>
-        <ul class="options">
-            <li>a) NK細胞</li>
-            <li>b) B細胞</li>
-            <li>c) 好中球</li>
-            <li>d) T細胞</li>
-        </ul>
-        <p class="answer">答え: b) B細胞 と d) T細胞</p>
-    </div>
-    <!-- 問題3以降も同様に記述してください -->
-    <div class="question">
-        <h2>問題3</h2>
-        <p>免疫グロブリンの主な働きはどれですか？</p>
-        <ul class="options">
-          <li>a) 細胞性免疫</li>
-          <li>b) 液性免疫</li>
-          <li>c) 補体系の活性化</li>
-          <li>d) サイトカインの産生</li>
-        </ul>
-        <p class="answer">答え: b) 液性免疫</p>
-    </div>
-    <div class="question">
-        <h2>問題4</h2>
-        <p>次のうち、抗原提示細胞の役割を果たすものはどれですか？</p>
-        <ul class="options">
-          <li>a) 赤血球</li>
-          <li>b) 血小板</li>
-          <li>c) 樹状細胞</li>
-          <li>d) 好酸球</li>
-        </ul>
-        <p class="answer">答え: c) 樹状細胞</p>
-    </div>
-    <div class="question">
-        <h2>問題5</h2>
-        <p>免疫寛容の仕組みとして正しいものはどれですか？</p>
-        <ul class="options">
-          <li>a) 自己抗原に対する反応性の獲得</li>
-          <li>b) 自己反応性リンパ球の除去</li>
-          <li>c) 炎症性サイトカインの産生</li>
-          <li>d) 抗体産生の亢進</li>
-        </ul>
-        <p class="answer">答え: b) 自己反応性リンパ球の除去</p>
-    </div>
-    <div class="question">
-        <h2>問題6</h2>
-        <p>I型即時型アレルギー反応に関与する主な抗体はどれですか？</p>
-        <ul class="options">
-          <li>a) IgA</li>
-          <li>b) IgE</li>
-          <li>c) IgG</li>
-          <li>d) IgM</li>
-        </ul>
-        <p class="answer">答え: b) IgE</p>
-    </div>
-    <div class="question">
-        <h2>問題7</h2>
-        <p>II型細胞障害型アレルギーの例として正しいものはどれですか？</p>
-        <ul class="options">
-          <li>a) 花粉症</li>
-          <li>b) 接触性皮膚炎</li>
-          <li>c) 輸血反応</li>
-          <li>d) 全身性エリテマトーデス</li>
-        </ul>
-        <p class="answer">答え: c) 輸血反応</p>
-    </div>
-    <div class="question">
-        <h2>問題8</h2>
-        <p>III型免疫複合体型アレルギーにおいて、主な病態を引き起こす要因は何ですか？</p>
-        <ul class="options">
-          <li>a) T細胞の過剰活性化</li>
-          <li>b) 抗原抗体複合体の沈着</li>
-          <li>c) 肥満細胞の脱顆粒</li>
-          <li>d) NK細胞の活性化</li>
-        </ul>
-        <p class="answer">答え: b) 抗原抗体複合体の沈着</p>
-    </div>
-    <div class="question">
-        <h2>問題9</h2>
-        <p>IV型遅延型アレルギーの特徴として正しいものはどれですか？</p>
-        <ul class="options">
-          <li>a) IgE抗体が主要な役割を果たす</li>
-          <li>b) 反応は数分以内に現れる</li>
-          <li>c) T細胞が中心的な役割を果たす</li>
-          <li>d) 補体系の活性化が主な機序である</li>
-        </ul>
-        <p class="answer">答え: c) T細胞が中心的な役割を果たす</p>
-    </div>
-    <div class="question">
-        <h2>問題10</h2>
-        <p>次のうち、I型即時型アレルギーの症状として最も典型的なものはどれですか？</p>
-        <ul class="options">
-          <li>a) 発熱</li>
-          <li>b) 蕁麻疹</li>
-          <li>c) 関節痛</li>
-          <li>d) 倦怠感</li>
-        </ul>
-        <p class="answer">答え: b) 蕁麻疹</p>
-    </div>
-    <div class="question">
-        <h2>問題11</h2>
-        <p>II型細胞障害型アレルギーにおいて、主に関与する抗体はどれですか？（複数選択可）</p>
-        <ul class="options">
-          <li>a) IgE</li>
-          <li>b) IgG</li>
-          <li>c) IgA</li>
-          <li>d) IgM</li>
-        </ul>
-        <p class="answer">答え: b) IgG と d) IgM</p>
-    </div>
-    <div class="question">
-        <h2>問題12</h2>
-        <p>補体系の主な働きはどれですか？</p>
-        <ul class="options">
-          <li>a) 抗体産生</li>
-          <li>b) 細胞性免疫</li>
-          <li>c) 病原体の溶解</li>
-          <li>d) 抗原提示</li>
-        </ul>
-        <p class="answer">答え: c) 病原体の溶解</p>
-    </div>
-    <div class="question">
-        <h2>問題13</h2>
-        <p>次のうち、獲得免疫の特徴として正しいものはどれですか？</p>
-        <ul class="options">
-          <li>a) 非特異的な防御機構である</li>
-          <li>b) 即時に反応する</li>
-          <li>c) 免疫記憶がある</li>
-          <li>d) 生まれつき備わっている</li>
-        </ul>
-        <p class="answer">答え: c) 免疫記憶がある</p>
-    </div>
-    <div class="question">
-        <h2>問題14</h2>
-        <p>母子免疫に関与する免疫グロブリンはどれですか？</p>
-        <ul class="options">
-          <li>a) IgA</li>
-          <li>b) IgD</li>
-          <li>c) IgE</li>
-          <li>d) IgG</li>
-        </ul>
-        <p class="answer">答え: d) IgG</p>
-    </div>
-    <div class="question">
-        <h2>問題15</h2>
-        <p>IV型遅延型アレルギー反応が現れるまでの一般的な時間は？</p>
-        <ul class="options">
-          <li>a) 数分以内</li>
-          <li>b) 1-2時間後</li>
-          <li>c) 6-12時間後</li>
-          <li>d) 24-72時間後</li>
-        </ul>
-        <p class="answer">答え: d) 24-72時間後</p>
-    </div>
-    <div class="question">
-        <h2>問題16</h2>
-        <p>アレルギー性鼻炎は主にどの型のアレルギー反応に分類されますか？</p>
-        <ul class="options">
-          <li>a) I型</li>
-          <li>b) II型</li>
-          <li>c) III型</li>
-          <li>d) IV型</li>
-        </ul>
-        <p class="answer">答え: a) I型</p>
-    </div>
-    <div class="question">
-        <h2>問題17</h2>
-        <p>リンパ球の成熟に重要な器官はどれですか？</p>
-        <ul class="options">
-          <li>a) 肝臓</li>
-          <li>b) 腎臓</li>
-          <li>c) 心臓</li>
-          <li>d) 胸腺</li>
-        </ul>
-        <p class="answer">答え: d) 胸腺</p>
-    </div>
-    <div class="question">
-        <h2>問題18</h2>
-        <p>次のうち、二次リンパ組織はどれですか？（複数選択可）</p>
-        <ul class="options">
-          <li>a) 骨髄</li>
-          <li>b) リンパ節</li>
-          <li>c) 脾臓</li>
-          <li>d) 扁桃</li>
-        </ul>
-        <p class="answer">答え: b) リンパ節, c) 脾臓, d) 扁桃</p>
-    </div>
-    <div class="question">
-        <h2>問題19</h2>
-        <p>抗原抗体反応の一つである凝集反応の原理は何ですか？</p>
-        <ul class="options">
-          <li>a) 抗原と抗体の結合により、可溶性の複合体が形成される</li>
-          <li>b) 抗原と抗体の結合により、不溶性の沈殿物が形成される</li>
-          <li>c) 抗原と抗体の結合により、細胞が溶解される</li>
-          <li>d) 抗原と抗体の結合により、補体系が活性化される</li>
-        </ul>
-        <p class="answer">答え: b) 抗原と抗体の結合により、不溶性の沈殿物が形成される</p>
-    </div>
-    <div class="question">
-        <h2>問題20</h2>
-        <p>次のうち、自然免疫に属するものはどれですか？</p>
-        <ul class="options">
-          <li>a) 食細胞</li>
-          <li>b) キラーT細胞</li>
-          <li>c) メモリーB細胞</li>
-          <li>d) ヘルパーT細胞</li>
-        </ul>
-        <p class="answer">答え: a) 食細胞</p>
-    </div>
-    <div class="question">
-        <h2>問題21</h2>
-        <p>免疫不全症の一つである重症複合免疫不全症（SCID）で欠損している細胞はどれですか？</p>
-        <ul class="options">
-          <li>a) B細胞</li>
-          <li>b) T細胞</li>
-          <li>c) NK細胞</li>
-          <li>d) マクロファージ</li>
-        </ul>
-        <p class="answer">答え: b) T細胞</p>
-    </div>
-    <div class="question">
-        <h2>問題22</h2>
-        <p>次のうち、体液性免疫に関与する細胞はどれですか？</p>
-        <ul class="options">
-          <li>a) ヘルパーT細胞</li>
-          <li>b) キラーT細胞</li>
-          <li>c) B細胞</li>
-          <li>d) マクロファージ</li>
-        </ul>
-        <p class="answer">答え: c) B細胞</p>
-    </div>
-    <div class="question">
-        <h2>問題23</h2>
-        <p>抗原抗体反応を利用した検査法はどれですか？</p>
-        <ul class="options">
-          <li>a) ウェスタンブロット法</li>
-          <li>b) ノーザンブロット法</li>
-          <li>c) サザンブロット法</li>
-          <li>d) フローサイトメトリー法</li>
-        </ul>
-        <p class="answer">答え: a) ウェスタンブロット法</p>
-    </div>
-    <div class="question">
-        <h2>問題2
+    <button id="show-answer-button" onclick="showAnswer()">解答を表示</button>
+  </div>
+  
+
+  <script>
+    // アレルギー4型クイズのデータ
+    const quizData = [
+      // ... (既存のクイズデータ) ...
+    ];
+
+    // 免疫学習問題集のデータ
+    const immunityQuestions = [
+      { 
+        question: "自然免疫に関与する細胞はどれですか？",
+        options: ["a) B細胞", "b) T細胞", "c) マクロファージ", "d) 形質細胞"],
+        answer: "c) マクロファージ"
+      },
+      { 
+        question: "獲得免疫に関与する細胞はどれですか？（複数選択可）",
+        options: ["a) NK細胞", "b) B細胞", "c) 好中球", "d) T細胞"],
+        answer: "b) B細胞 と d) T細胞" 
+      },
+      { 
+        question: "免疫グロブリンの主な働きはどれですか？",
+        options: ["a) 細胞性免疫", "b) 液性免疫", "c) 補体系の活性化", "d) サイトカインの産生"],
+        answer: "b) 液性免疫" 
+      },
+      { 
+        question: "次のうち、抗原提示細胞の役割を果たすものはどれですか？",
+        options: ["a) 赤血球", "b) 血小板", "c) 樹状細胞", "d) 好酸球"],
+        answer: "c) 樹状細胞"
+      },
+      { 
+        question: "免疫寛容の仕組みとして正しいものはどれですか？",
+        options: ["a) 自己抗原に対する反応性の獲得", "b) 自己反応性リンパ球の除去", "c) 炎症性サイトカインの産生", "d) 抗体産生の亢進"],
+        answer: "b) 自己反応性リンパ球の除去"
+      },
+      { 
+        question: "I型即時型アレルギー反応に関与する主な抗体はどれですか？",
+        options: ["a) IgA", "b) IgE", "c) IgG", "d) IgM"],
+        answer: "b) IgE" 
+      },
+      { 
+        question: "II型細胞障害型アレルギーの例として正しいものはどれですか？",
+        options: ["a) 花粉症", "b) 接触性皮膚炎", "c) 輸血反応", "d) 全身性エリテマトーデス"],
+        answer: "c) 輸血反応" 
+      },
+      { 
+        question: "III型免疫複合体型アレルギーにおいて、主な病態を引き起こす要因は何ですか？",
+        options: ["a) T細胞の過剰活性化", "b) 抗原抗体複合体の沈着", "c) 肥満細胞の脱顆粒", "d) NK細胞の活性化"],
+        answer: "b) 抗原抗体複合体の沈着" 
+      },
+      { 
+        question: "IV型遅延型アレルギーの特徴として正しいものはどれですか？",
+        options: ["a) IgE抗体が主要な役割を果たす", "b) 反応は数分以内に現れる", "c) T細胞が中心的な役割を果たす", "d) 補体系の活性化が主な機序である"],
+        answer: "c) T細胞が中心的な役割を果たす" 
+      },
+      { 
+        question: "次のうち、I型即時型アレルギーの症状として最も典型的なものはどれですか？",
+        options: ["a) 発熱", "b) 蕁麻疹", "c) 関節痛", "d) 倦怠感"],
+        answer: "b) 蕁麻疹" 
+      },
+      { 
+        question: "II型細胞障害型アレルギーにおいて、主に関与する抗体はどれですか？（複数選択可）",
+        options: ["a) IgE", "b) IgG", "c) IgA", "d) IgM"],
+        answer: "b) IgG と d) IgM" 
+      },
+      { 
+        question: "補体系の主な働きはどれですか？",
+        options: ["a) 抗体産生", "b) 細胞性免疫", "c) 病原体の溶解", "d) 抗原提示"],
+        answer: "c) 病原体の溶解" 
+      },
+      { 
+        question: "次のうち、獲得免疫の特徴として正しいものはどれですか？",
+        options: ["a) 非特異的な防御機構である", "b) 即時に反応する", "c) 免疫記憶がある", "d) 生まれつき備わっている"],
+        answer: "c) 免疫記憶がある" 
+      },
+      { 
+        question: "母子免疫に関与する免疫グロブリンはどれですか？",
+        options: ["a) IgA", "b) IgD", "c) IgE", "d) IgG"],
+        answer: "d) IgG" 
+      },
+      { 
+        question: "IV型遅延型アレルギー反応が現れるまでの一般的な時間は？",
+        options: ["a) 数分以内", "b) 1-2時間後", "c) 6-12時間後", "d) 24-72時間後"],
+        answer: "d) 24-72時間後" 
+      },
+      { 
+        question: "アレルギー性鼻炎は主にどの型のアレルギー反応に分類されますか？",
+        options: ["a) I型", "b) II型", "c) III型", "d) IV型"],
+        answer: "a) I型" 
+      },
+      { 
+        question: "リンパ球の成熟に重要な器官はどれですか？",
+        options: ["a) 肝臓", "b) 腎臓", "c) 心臓", "d) 胸腺"],
+        answer: "d) 胸腺" 
+      },
+      { 
+        question: "次のうち、二次リンパ組織はどれですか？（複数選択可）",
+        options: ["a) 骨髄", "b) リンパ節", "c) 脾臓", "d) 扁桃"],
+        answer: "b) リンパ節, c) 脾臓, d) 扁桃" 
+      },
+      { 
+        question: "抗原抗体反応の一つである凝集反応の原理は何ですか？",
+        options: ["a) 抗原と抗体の結合により、可溶性の複合体が形成される", "b) 抗原と抗体の結合により、不溶性の沈殿物が形成される", "c) 抗原と抗体の結合により、細胞が溶解される", "d) 抗原と抗体の結合により、補体系が活性化される"],
+        answer: "b) 抗原と抗体の結合により、不溶性の沈殿物が形成される" 
+      },
+      { 
+        question: "次のうち、自然免疫に属するものはどれですか？",
+        options: ["a) 食細胞", "b) キラーT細胞", "c) メモリーB細胞", "d) ヘルパーT細胞"],
+        answer: "a) 食細胞"
+      },
+      { 
+        question: "免疫不全症の一つである重症複合免疫不全症（SCID）で欠損している細胞はどれですか？",
+        options: ["a) B細胞", "b) T細胞", "c) NK細胞", "d) マクロファージ"],
+        answer: "b) T細胞" 
+      },
+      { 
+        question: "次のうち、体液性免疫に関与する細胞はどれですか？",
+        options: ["a) ヘルパーT細胞", "b) キラーT細胞", "c) B細胞", "d) マクロファージ"],
+        answer: "c) B細胞" 
+      },
+      { 
+        question: "抗原抗体反応を利用した検査法はどれですか？",
+        options: ["a) ウェスタンブロット法", "b) ノーザンブロット法", "c) サザンブロット法", "d) フローサイトメトリー法"],
+        answer: "a) ウェスタンブロット法" 
+      },
+      { 
+        question: "ウイルス感染に対する防御に重要な役割を果たすサイトカインはどれですか？",
+        options: ["a) インターロイキン-4", "b) インターフェロン-α", "c) トランスフォーミング増殖因子-β", "d) 腫瘍壊死因子-α"],
+        answer: "b) インターフェロン-α" 
+      },
+      { 
+        question: "次のうち、自己免疫疾患の例として正しいものはどれですか？",
+        options: ["a) インフルエンザ", "b) 関節リウマチ", "c) 肺炎", "d) 髄膜炎"],
+        answer: "b) 関節リウマチ" 
+      },
+      { 
+        question: "抗体産生に関与するリンパ球はどれですか？",
+        options: ["a) T細胞", "b) B細胞", "c) NK細胞", "d) 樹状細胞"],
+        answer: "b) B細胞" 
+      },
+      { 
+        question: "免疫応答において、抗原を認識し、B細胞を活性化させる働きを持つ細胞はどれですか？",
+        options: ["a) ヘルパーT細胞", "b) キラーT細胞", "c) 形質細胞", "d) 樹状細胞"],
+        answer: "a) ヘルパーT細胞" 
+      },
+      { 
+        question: "次のうち、獲得免疫の働きを持たないものはどれですか？",
+        options: ["a) 抗体産生", "b) 免疫記憶", "c) 食作用", "d) 特異的免疫応答"],
+        answer: "c) 食作用" 
+      },
+      { 
+        question: "免疫系の働きを抑制するサイトカインはどれですか？",
+        options: ["a) インターロイキン-2", "b) インターロイキン-10", "c) インターフェロン-γ", "d) 腫瘍壊死因子-α"],
+        answer: "b) インターロイキン-10" 
+      },
+      { 
+        question: "次のうち、抗体の主な産生部位はどこですか？",
+        options: ["a) 胸腺", "b) 骨髄", "c) リンパ節", "d) 脾臓"],
+        answer: "b) 骨髄" 
+      },
+      { 
+        question: "免疫グロブリンの基本構造を構成するタンパク質はどれですか？",
+        options: ["a) アルブミン", "b) ヘモグロビン", "c) ケラチン", "d) グロブリン"],
+        answer: "d) グロブリン" 
+      },
+      { 
+        question: "次のうち、細胞性免疫に関与するリンパ球はどれですか？",
+        options: ["a) B細胞", "b) T細胞", "c) NK細胞", "d) 形質細胞"],
+        answer: "b) T細胞" 
+      },
+      { 
+        question: "免疫系の異常により、自己の組織を攻撃してしまう状態を何と呼びますか？",
+        options: ["a) 免疫不全", "b) 自己免疫", "c) 免疫寛容", "d) 移植免疫"],
+        answer: "b) 自己免疫" 
+      },
+      { 
+        question: "次のうち、血液型抗原の種類を決定する物質は何ですか？",
+        options: ["a) 糖脂質", "b) 糖タンパク質", "c) リン脂質", "d) 核酸"],
+        answer: "b) 糖タンパク質" 
+      },
+      { 
+        question: "アレルギー反応において、肥満細胞からヒスタミンを放出させる免疫グロブリンはどれですか？",
+        options: ["a) IgA", "b) IgD", "c) IgE", "d) IgG"],
+        answer: "c) IgE" 
+      },
+      { 
+        question: "次のうち、胸腺で成熟するリンパ球はどれですか？",
+        options: ["a) B細胞", "b) T細胞", "c) NK細胞", "d) 形質細胞"],
+        answer: "b) T細胞" 
+      },
+      { 
+        question: "免疫系の働きを活性化するサイトカインはどれですか？",
+        options: ["a) インターロイキン-4", "b) インターロイキン-10", "c) インターフェロン-γ", "d) トランスフォーミング増殖因子-β"],
+        answer: "c) インターフェロン-γ" 
+      },
+      { 
+        question: "次のうち、抗体依存性細胞傷害（ADCC）に関与する細胞はどれですか？",
+        options: ["a) B細胞", "b) T細胞", "c) NK細胞", "d) 樹状細胞"],
+        answer: "c) NK細胞" 
+      },
+      { 
+        question: "次のうち、獲得免疫の特徴でないものはどれですか？",
+        options: ["a) 特異性", "b) 多様性", "c) 自然免疫との連携", "d) 即時性"],
+        answer: "d) 即時性" 
+      },
+      { 
+        question: "次のうち、液性免疫に関与しない細胞はどれですか？",
+        options: ["a) B細胞", "b) 形質細胞", "c) ヘルパーT細胞", "d) キラーT細胞"],
+        answer: "d) キラーT細胞" 
+      }
+    ];
+
+    let currentQuestion = 0;
+    let correctAnswers = 0;
+
+    // アレルギー4型クイズの関数
+    function startQuiz() {
+      // ... (既存のクイズ開始処理) ...
+    }
+
+    function loadQuestion() {
+      // ... (既存の問題読み込み処理) ...
+    }
+
+    function checkAnswer() {
+      // ... (既存の解答確認処理) ...
+    }
+
+    function prevQuestion() {
+      // ... (既存の前問移動処理) ...
+    }
+
+    function nextQuestion() {
+      // ... (既存の次問移動処理) ...
+    }
+
+    function showResult() {
+      // ... (既存の結果表示処理) ...
+    }
+
+    function resetQuiz() {
+      // ... (既存のクイズリセット処理) ...
+    }
+
+    function openAttendanceForm() {
+      // ... (既存の出席フォーム表示処理) ...
+    }
+
+    // 免疫学習問題集の関数
+    function displayQuestions() {
+      const questionsContainer = document.getElementById("questions-container");
+      questionsContainer.innerHTML = ""; // 既存の内容をクリア
+
+      immunityQuestions.forEach((q, index) => {
+        let questionHtml = `
+          <div class="question">
+            <h2>問題 ${index + 1}</h2>
+            <p>${q.question}</p>
+            <ul class="options">
+              ${q.options.map(option => `<li>${option}</li>`).join("")}
+            </ul>
+            <p class="answer" style="display:none;">${q.answer}</p>
+          </div>
+        `;
+        questionsContainer.innerHTML += questionHtml;
+      });
+    }
+
+    function showAnswer() {
+      const answers = document.querySelectorAll('.answer');
+      answers.forEach(answer => {
+        answer.style.display = "block";
+      });
+    }
+
+    // ページ読み込み時に問題を表示
+    displayQuestions();
+  </script>
+</body>
+</html>
