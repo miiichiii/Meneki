@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アレルギー4型クイズ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .quiz-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .question {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .options li {
+            margin-bottom: 10px;
+        }
+        .answer {
+            display: none;
+            background-color: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .progress {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>アレルギー4型クイズ</h1>
+        <div id="quiz"></div>
+        <div class="navigation">
+            <button id="prev">前の問題</button>
+            <button id="next">次の問題</button>
+        </div>
+        <div class="progress">問題 <span id="current">1</span> / <span id="total">10</span></div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "I型即時型アレルギー反応に関与する主な抗体はどれですか？",
+                options: ["IgA", "IgE", "IgG", "IgM"],
+                answer: 1,
+                explanation: "I型即時型アレルギー反応では、IgE抗体が主要な役割を果たします。これらの抗体は肥満細胞や好塩基球の表面に結合し、アレルゲンと反応することで即時型のアレルギー症状を引き起こします。"
+            },
+            {
+                question: "II型細胞障害型アレルギーの例として正しいものはどれですか？",
+                options: ["花粉症", "接触性皮膚炎", "輸血反応", "全身性エリテマトーデス"],
+                answer: 2,
+                explanation: "II型細胞障害型アレルギーは、抗体が細胞表面の抗原と反応し、補体系の活性化や細胞溶解を引き起こします。輸血反応はこの典型的な例で、不適合な血液型の輸血により赤血球が破壊されます。"
+            },
+            // 残りの問題をここに追加
+        ];
+
+        let currentQuestion = 0;
+
+        function loadQuestion() {
+            const question = quizData[currentQuestion];
+            let quizHtml = `
+                <div class="question">
+                    <h2>問題 ${currentQuestion + 1}</h2>
+                    <p>${question.question}</p>
+                    <ul class="options">
+                        ${question.options.map((option, index) => `
+                            <li>
+                                <label>
+                                    <input type="radio" name="answer" value="${index}">
+                                    ${option}
+                                </label>
+                            </li>
+                        `).join("")}
+                    </ul>
+                    <button onclick="checkAnswer()">答えを確認</button>
+                    <div id="answer" class="answer"></div>
+                </div>
+            `;
+            document.getElementById("quiz").innerHTML = quizHtml;
+            document.getElementById("current").textContent = currentQuestion + 1;
+            document.getElementById("total").textContent = quizData.length;
+        }
+
+        function checkAnswer() {
+            const selectedAnswer = document.querySelector('input[name="answer"]:checked');
+            if (selectedAnswer) {
+                const answerIndex = parseInt(selectedAnswer.value);
+                const question = quizData[currentQuestion];
+                const answerElement = document.getElementById("answer");
+                if (answerIndex === question.answer) {
+                    answerElement.innerHTML = `<p><strong>正解です！</strong></p><p>${question.explanation}</p>`;
+                } else {
+                    answerElement.innerHTML = `<p><strong>不正解です。正解は ${question.options[question.answer]} です。</strong></p><p>${question.explanation}</p>`;
+                }
+                answerElement.style.display = "block";
+            }
+        }
+
+        document.getElementById("prev").addEventListener("click", () => {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+            }
+        });
+
+        document.getElementById("next").addEventListener("click", () => {
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                loadQuestion();
+            }
+        });
+
+        loadQuestion();
+    </script>
+</body>
+</html>
