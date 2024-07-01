@@ -71,7 +71,7 @@
     <div id="result" style="display: none;"></div>
     <div id="attendance-link" style="display: none;">
       <h2>出席確認</h2>
-      <p>以下のボタンから出席フォームに回答してください。</p>
+      <p>おめでとうございます！正答率が80%を超えました！以下のボタンから出席フォームに回答してください。</p>
       <button id="attendance-button" onclick="openAttendanceForm()">出席フォームを開く</button>
     </div>
   </div>
@@ -430,8 +430,10 @@
       document.querySelector('.navigation').style.display = 'none';
       document.querySelector('.progress').style.display = 'none';
 
-      // 出席フォームへのボタンを表示
-      document.getElementById('attendance-link').style.display = 'block';
+      // 正答率が80%以上のときのみ、出席フォームへのボタンを表示
+      if (percentage >= 80) {
+        document.getElementById('attendance-link').style.display = 'block';
+      }
     }
 
     function resetQuiz() {
