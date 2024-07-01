@@ -3,45 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>アレルギー4型クイズ</title>
+  <title>免疫学習問題集</title>
   <style>
+    body {
+      font-family: sans-serif;
+    }
     .quiz-container {
       max-width: 600px;
-      margin: 0 auto;
+      margin: 30px auto;
       padding: 20px;
       border: 1px solid #ccc;
       border-radius: 10px;
     }
-
     .question {
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
-
     .options {
       list-style-type: none;
       padding: 0;
     }
-
     .options li {
       margin-bottom: 10px;
     }
-
     .answer {
-      margin-top: 20px;
+      margin-top: 10px;
       color: green;
+      font-weight: bold;
     }
-
     .navigation {
       display: flex;
       justify-content: space-between;
       margin-top: 20px;
     }
-
     .progress {
       margin-top: 20px;
       text-align: center;
     }
-
     #attendance-button {
       display: block; 
       margin: 20px auto; 
@@ -62,7 +59,8 @@
       <input type="text" id="user-name" placeholder="あなたの名前を入力してください">
       <button onclick="startQuiz()">クイズを開始</button>
     </div>
-    <div id="quiz" style="display: none;"></div>
+    <div id="quiz" style="display: none;">
+        </div>
     <div class="navigation" style="display: none;">
       <button id="prev" onclick="prevQuestion()">前の問題</button>
       <button id="next" onclick="nextQuestion()">次の問題</button>
@@ -76,6 +74,53 @@
     </div>
   </div>
 
+  <div class="quiz-container" id="immunity-questions">
+    <h1>免疫学習問題集</h1>
+    <div class="question">
+        <h2>問題1</h2>
+        <p>自然免疫に関与する細胞はどれですか？</p>
+        <ul class="options">
+            <li>a) B細胞</li>
+            <li>b) T細胞</li>
+            <li>c) マクロファージ</li>
+            <li>d) 形質細胞</li>
+        </ul>
+        <p class="answer">答え: c) マクロファージ</p>
+    </div>
+    <div class="question">
+        <h2>問題2</h2>
+        <p>獲得免疫に関与する細胞はどれですか？（複数選択可）</p>
+        <ul class="options">
+            <li>a) NK細胞</li>
+            <li>b) B細胞</li>
+            <li>c) 好中球</li>
+            <li>d) T細胞</li>
+        </ul>
+        <p class="answer">答え: b) B細胞 と d) T細胞</p>
+    </div>
+    <div class="question">
+        <h2>問題3</h2>
+        <p>免疫グロブリンの主な働きはどれですか？</p>
+        <ul class="options">
+            <li>a) 細胞性免疫</li>
+            <li>b) 液性免疫</li>
+            <li>c) 補体系の活性化</li>
+            <li>d) サイトカインの産生</li>
+        </ul>
+        <p class="answer">答え: b) 液性免疫</p>
+    </div>
+    <div class="question">
+        <h2>問題4</h2>
+        <p>次のうち、抗原提示細胞の役割を果たすものはどれですか？</p>
+        <ul class="options">
+            <li>a) 赤血球</li>
+            <li>b) 血小板</li>
+            <li>c) 樹状細胞</li>
+            <li>d) 好酸球</li>
+        </ul>
+        <p class="answer">答え: c) 樹状細胞</p>
+    </div>
+    </div>
   <script>
     const quizData = [
       {
