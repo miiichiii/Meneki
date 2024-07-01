@@ -167,6 +167,7 @@
             }
             const isCorrect = selectedOption.value == question.answer;
             answerDiv.innerHTML = isCorrect ? "正解です！" : `不正解です。正解は: ${question.options[question.answer]}`;
+            answerDiv.innerHTML += `<p>${question.explanation}</p>`;
             answerDiv.style.color = isCorrect ? "green" : "red";
         }
 
