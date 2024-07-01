@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>アレルギー4型クイズ</title>
+  <title>アレルギークイズ</title>
   <style>
     .quiz-container {
       max-width: 600px;
@@ -124,6 +124,7 @@
     ];
 
     let currentQuestion = 0;
+    let correctAnswers = 0; // 正答数を保持する変数を追加
 
     function startQuiz() {
       const userName = document.getElementById('user-name').value;
@@ -131,6 +132,7 @@
         alert('名前を入力してください。');
         return;
       }
+      correctAnswers = 0; // クイズ開始時に正答数をリセット
       document.getElementById('name-form').style.display = 'none';
       document.getElementById('quiz').style.display = 'block';
       document.querySelector('.navigation').style.display = 'flex';
@@ -158,7 +160,7 @@
             `).join("")}
           </ul>
           <button onclick="checkAnswer()">答えを確認</button>
-          <div id="answer${currentQuestion}" class="answer"></div> <div id="answer${currentQuestion}" class="answer"></div> 
+          <div id="answer${currentQuestion}" class="answer"></div>
         </div>
       `;
       document.getElementById("quiz").innerHTML = quizHtml;
@@ -170,14 +172,12 @@
     function checkAnswer() {
       const question = quizData[currentQuestion];
       let selectedOptions;
-      let isCorrect = false; // 初期値をfalseに設定
+      let isCorrect = false;
 
       if (Array.isArray(question.answer)) {
-        // 複数選択の場合
         selectedOptions = Array.from(document.querySelectorAll(`input[name="answer${currentQuestion}"]:checked`)).map(el => parseInt(el.value));
         isCorrect = selectedOptions.length === question.answer.length && selectedOptions.every(val => question.answer.includes(val));
       } else {
-        // 単一選択の場合
         const selectedOption = document.querySelector(`input[name="answer${currentQuestion}"]:checked`);
         if (!selectedOption) {
           alert('回答を選択してください。');
@@ -188,10 +188,14 @@
       }
 
       const answerDiv = document.getElementById(`answer${currentQuestion}`);
+      if (isCorrect) {
+        correctAnswers++; // 正解の場合のみカウントアップ
+      }
       answerDiv.innerHTML = isCorrect ? "正解です！" : `不正解です。正解は: ${Array.isArray(question.answer) ? question.options.filter((_, i) => question.answer.includes(i)).join(', ') : question.options[question.answer]}`;
       answerDiv.innerHTML += `<p>${question.explanation}</p>`;
       answerDiv.style.color = isCorrect ? "green" : "red";
     }
+
 
     function prevQuestion() {
       if (currentQuestion > 0) {
@@ -211,20 +215,6 @@
 
     function showResult() {
       const userName = document.getElementById('user-name').value;
-      let correctAnswers = 0;
-      quizData.forEach((q, i) => {
-        if (Array.isArray(q.answer)) {
-          const selectedOptions = Array.from(document.querySelectorAll(`input[name="answer${i}"]:checked`)).map(el => parseInt(el.value));
-          if (selectedOptions.length === q.answer.length && selectedOptions.every(val => q.answer.includes(val))) {
-            correctAnswers++;
-          }
-        } else {
-          const selectedOption = document.querySelector(`input[name="answer${i}"]:checked`);
-          if (selectedOption && parseInt(selectedOption.value) === q.answer) {
-            correctAnswers++;
-          }
-        }
-      });
       const resultHtml = `
         <h2>${userName}さんの結果</h2>
         <p>正解数: ${correctAnswers} / ${quizData.length}</p>
@@ -240,12 +230,11 @@
 
     function resetQuiz() {
       currentQuestion = 0;
+      correctAnswers = 0; // リセット時に正答数もリセット
       document.getElementById('result').style.display = 'none';
       document.getElementById('name-form').style.display = 'block';
-      // フォームの入力値をリセット
       document.getElementById('user-name').value = '';
       Array.from(document.querySelectorAll('input[type="radio"]:checked, input[type="checkbox"]:checked')).forEach(el => el.checked = false);
-      // 回答の表示をリセット
       document.querySelectorAll('.answer').forEach(el => el.innerHTML = '');
     }
   </script>
