@@ -80,7 +80,7 @@
       <button id="prev" onclick="prevQuestion()">前の問題</button>
       <button id="next" onclick="nextQuestion()">次の問題</button>
     </div>
-    <div class="progress" style="display: none;">問題 <span id="current">1</span> / <span id="total">3</span></div>
+    <div class="progress" style="display: none;">問題 <span id="current">1</span> / <span id="total">40</span></div>
     <div id="result" style="display: none;"></div>
     <div id="attendance-link" style="display: none;">
       <h2>出席確認</h2>
@@ -91,7 +91,7 @@
 
   <script>
     const quizData = [
-    {
+  {
 question: "自然免疫に関与する細胞はどれですか？",
 options: ["B細胞", "T細胞", "マクロファージ", "形質細胞"],
 answer: 2, // マクロファージ
@@ -99,8 +99,8 @@ explanation: "マクロファージは、自然免疫において重要な食細
 },
 {
 question: "獲得免疫に関与する細胞はどれですか？（複数選択可）",
-options: ["NK細胞", "B細胞", "好中球", "T細胞"],
-answer: [1, 3], // B細胞, T細胞
+options: ["NK細胞", "B細胞", "好中球", “赤血球"],
+answer: 1, // B細胞, 
 explanation: "B細胞とT細胞は、獲得免疫において中心的な役割を果たします。"
 },
 {
@@ -153,8 +153,8 @@ explanation: "蕁麻疹は、I型即時型アレルギーの典型的な症状�
 },
 {
 question: "II型細胞障害型アレルギーにおいて、主に関与する抗体はどれですか？（複数選択可）",
-options: ["IgE", "IgG", "IgA", "IgM"],
-answer: [1, 3], // IgG, IgM
+options: ["IgE", "IgG", "IgA", "IgD"],
+answer: 1, // IgG, 
 explanation: "IgG抗体とIgM抗体は、II型細胞障害型アレルギーにおいて主に関与します。"
 },
 {
@@ -194,9 +194,9 @@ answer: 3, // 胸腺
 explanation: "T細胞は、胸腺で成熟し、自己と非自己を区別する能力を獲得します。"
 },
 {
-question: "次のうち、二次リンパ組織はどれですか？（複数選択可）",
+question: "次のうち、二次リンパ組織はでないものはどれですか？",
 options: ["骨髄", "リンパ節", "脾臓", "扁桃"],
-answer: [1, 2, 3], // リンパ節, 脾臓, 扁桃
+answer: 0, // 骨髄
 explanation: "リンパ節、脾臓、扁桃は、二次リンパ組織であり、免疫応答が起こる主要な場所です。"
 },
 {
@@ -329,7 +329,6 @@ explanation: "キラーT細胞は、細胞性免疫において主要な役割�
 
     function loadQuestion() {
       const question = quizData[currentQuestion];
-      const isMultipleAnswer = question.answer.length > 1;
       let quizHtml = `
         <div class="question">
           <h2>問題 ${currentQuestion + 1}</h2>
@@ -338,7 +337,7 @@ explanation: "キラーT細胞は、細胞性免疫において主要な役割�
             ${question.options.map((option, index) => `
               <li>
                 <label>
-                  <input type="${isMultipleAnswer ? 'checkbox' : 'radio'}" name="answer${currentQuestion}" value="${index}" onchange="handleSelection(${index})">
+                  <input type="radio" name="answer${currentQuestion}" value="${index}" onchange="handleSelection(${index})" ${userAnswers[currentQuestion] === index ? 'checked' : ''}>
                   ${option}
                 </label>
               </li>
@@ -351,51 +350,26 @@ explanation: "キラーT細胞は、細胞性免疫において主要な役割�
       document.getElementById("quiz").innerHTML = quizHtml;
       document.getElementById("current").textContent = currentQuestion + 1;
       document.getElementById("total").textContent = quizData.length;
-
-      // ユーザーの以前の回答を復元
-      if (userAnswers[currentQuestion]) {
-        if (Array.isArray(userAnswers[currentQuestion])) {
-          userAnswers[currentQuestion].forEach(index => {
-            document.querySelector(`input[name="answer${currentQuestion}"][value="${index}"]`).checked = true;
-          });
-        } else {
-          document.querySelector(`input[name="answer${currentQuestion}"][value="${userAnswers[currentQuestion]}"]`).checked = true;
-        }
-      }
     }
 
     function handleSelection(selectedIndex) {
       const question = quizData[currentQuestion];
-      const isMultipleAnswer = question.answer.length > 1;
+      const isCorrect = selectedIndex === question.answer;
       
-      if (isMultipleAnswer) {
-        const checkboxes = document.querySelectorAll(`input[name="answer${currentQuestion}"]:checked`);
-        userAnswers[currentQuestion] = Array.from(checkboxes).map(cb => parseInt(cb.value));
-      } else {
-        userAnswers[currentQuestion] = selectedIndex;
+      if (userAnswers[currentQuestion] === null && isCorrect) {
+        correctAnswers++;
+      } else if (userAnswers[currentQuestion] !== null && userAnswers[currentQuestion] === question.answer && !isCorrect) {
+        correctAnswers--;
       }
-
-      // 正解数の再計算
-      correctAnswers = quizData.reduce((total, q, index) => {
-        const userAnswer = userAnswers[index];
-        if (userAnswer !== null) {
-          if (Array.isArray(userAnswer)) {
-            const isCorrect = q.answer.length === userAnswer.length && 
-                              q.answer.every(a => userAnswer.includes(a));
-            return total + (isCorrect ? 1 : 0);
-          } else {
-            return total + (userAnswer === q.answer[0] ? 1 : 0);
-          }
-        }
-        return total;
-      }, 0);
+      
+      userAnswers[currentQuestion] = selectedIndex;
     }
 
     function showExplanation() {
       const question = quizData[currentQuestion];
       const explanationDiv = document.getElementById(`explanation${currentQuestion}`);
       explanationDiv.innerHTML = `
-        <p>正解: ${question.answer.map(i => question.options[i]).join(', ')}</p>
+        <p>正解: ${question.options[question.answer]}</p>
         <p>${question.explanation}</p>
       `;
       explanationDiv.style.display = 'block';
@@ -448,7 +422,7 @@ explanation: "キラーT細胞は、細胞性免疫において主要な役割�
     }
 
     function openAttendanceForm() {
-      window.open("https://docs.google.com/forms/d/e/1FAIpQLSexI-Zyj6AlGAwC2sd02JlijeY8Na22Xj_Cv6C5vqZi_PSBIg/viewform", "_blank");
+      window.open("https://docs.google.com/forms/d/e/1FAIpQLSfRaA0G9FvGIo-mnbQQOicSyZQH9HCBlb9jv_rcNbOyAfl9zQ/viewform", "_blank");
     }
   </script>
 </body>
