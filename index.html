@@ -3,61 +3,74 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>免疫学習問題集1</title>
+  <title>免疫クイズ</title>
   <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
     .quiz-container {
       max-width: 600px;
       margin: 0 auto;
       padding: 20px;
-      border: 1px solid #ccc;
+      background-color: #fff;
       border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-
+    h1, h2 {
+      color: #333;
+    }
     .question {
       margin-bottom: 20px;
     }
-
     .options {
       list-style-type: none;
       padding: 0;
     }
-
     .options li {
       margin-bottom: 10px;
     }
-
-    .answer {
-      margin-top: 20px;
-      color: green;
+    .explanation {
+      margin-top: 10px;
+      font-style: italic;
     }
-
     .navigation {
       display: flex;
       justify-content: space-between;
       margin-top: 20px;
     }
-
     .progress {
       margin-top: 20px;
       text-align: center;
     }
-
-    #attendance-button {
-      display: block; 
-      margin: 20px auto; 
+    button {
       padding: 10px 20px;
       font-size: 16px;
       color: #fff;
-      background-color: #4CAF50; 
+      background-color: #4CAF50;
       border: none;
       border-radius: 5px;
-      cursor: pointer; 
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
     }
   </style>
 </head>
 <body>
   <div class="quiz-container">
-    <h1>免疫学習問題集1</h1>
+    <h1>免疫クイズ</h1>
     <div id="name-form">
       <input type="text" id="user-name" placeholder="あなたの名前を入力してください">
       <button onclick="startQuiz()">クイズを開始</button>
@@ -71,233 +84,234 @@
     <div id="result" style="display: none;"></div>
     <div id="attendance-link" style="display: none;">
       <h2>出席確認</h2>
-      <p>おめでとうございます！正答率が80%を超えました！以下のボタンから出席フォームに回答してください。</p>
-      <button id="attendance-button" onclick="openAttendanceForm()">出席フォームを開く</button>
+      <p>おめでとうございます！正答率が80%を超えました！以下のボタンから合格フォームに回答してください。</p>
+      <button onclick="openAttendanceForm()">フォームを開く</button>
     </div>
   </div>
 
   <script>
     const quizData = [
-      {
-        question: "自然免疫に関与する細胞はどれですか？",
-        options: ["B細胞", "T細胞", "マクロファージ", "形質細胞"],
-        answer: 2, // マクロファージ
-        explanation: "マクロファージは、自然免疫において重要な食細胞です。"
-      },
-      {
-        question: "獲得免疫に関与する細胞はどれですか？（複数選択可）",
-        options: ["NK細胞", "B細胞", "好中球", "T細胞"],
-        answer: [1, 3], // B細胞, T細胞
-        explanation: "B細胞とT細胞は、獲得免疫において中心的な役割を果たします。"
-      },
-      {
-        question: "免疫グロブリンの主な働きはどれですか？",
-        options: ["細胞性免疫", "液性免疫", "補体系の活性化", "サイトカインの産生"],
-        answer: 1, // 液性免疫
-        explanation: "免疫グロブリン（抗体）は、液性免疫において重要な役割を果たします。"
-      },
-      {
-        question: "次のうち、抗原提示細胞の役割を果たすものはどれですか？",
-        options: ["赤血球", "血小板", "樹状細胞", "好酸球"],
-        answer: 2, // 樹状細胞
-        explanation: "樹状細胞は、抗原提示細胞として、T細胞に抗原を提示します。"
-      },
-      {
-        question: "免疫寛容の仕組みとして正しいものはどれですか？",
-        options: ["自己抗原に対する反応性の獲得", "自己反応性リンパ球の除去", "炎症性サイトカインの産生", "抗体産生の亢進"],
-        answer: 1, // 自己反応性リンパ球の除去
-        explanation: "免疫寛容は、自己反応性リンパ球を除去することで自己免疫疾患を防ぎます。"
-      },
-      {
-        question: "I型即時型アレルギー反応に関与する主な抗体はどれですか？",
-        options: ["IgA", "IgE", "IgG", "IgM"],
-        answer: 1, // IgE
-        explanation: "IgE抗体は、I型即時型アレルギー反応において中心的な役割を果たします。"
-      },
-      {
-        question: "II型細胞障害型アレルギーの例として正しいものはどれですか？",
-        options: ["花粉症", "接触性皮膚炎", "輸血反応", "全身性エリテマトーデス"],
-        answer: 2, // 輸血反応
-        explanation: "輸血反応は、II型細胞障害型アレルギーの一例です。"
-      },
-      {
-        question: "III型免疫複合体型アレルギーにおいて、主な病態を引き起こす要因は何ですか？",
-        options: ["T細胞の過剰活性化", "抗原抗体複合体の沈着", "肥満細胞の脱顆粒", "NK細胞の活性化"],
-        answer: 1, // 抗原抗体複合体の沈着
-        explanation: "III型免疫複合体型アレルギーでは、抗原抗体複合体の沈着が組織 damage を引き起こします。"
-      },
-      {
-        question: "IV型遅延型アレルギーの特徴として正しいものはどれですか？",
-        options: ["IgE抗体が主要な役割を果たす", "反応は数分以内に現れる", "T細胞が中心的な役割を果たす", "補体系の活性化が主な機序である"],
-        answer: 2, // T細胞が中心的な役割を果たす
-        explanation: "IV型遅延型アレルギーは、T細胞が中心的な役割を果たすアレルギー反応です。"
-      },
-      {
-        question: "次のうち、I型即時型アレルギーの症状として最も典型的なものはどれですか？",
-        options: ["発熱", "蕁麻疹", "関節痛", "倦怠感"],
-        answer: 1, // 蕁麻疹
-        explanation: "蕁麻疹は、I型即時型アレルギーの典型的な症状の一つです。"
-      },
-      {
-        question: "II型細胞障害型アレルギーにおいて、主に関与する抗体はどれですか？（複数選択可）",
-        options: ["IgE", "IgG", "IgA", "IgM"],
-        answer: [1, 3], // IgG, IgM
-        explanation: "IgG抗体とIgM抗体は、II型細胞障害型アレルギーにおいて主に関与します。"
-      },
-      {
-        question: "補体系の主な働きはどれですか？",
-        options: ["抗体産生", "細胞性免疫", "病原体の溶解", "抗原提示"],
-        answer: 2, // 病原体の溶解
-        explanation: "補体系は、病原体を直接攻撃し溶解する役割を担います。"
-      },
-      {
-        question: "次のうち、獲得免疫の特徴として正しいものはどれですか？",
-        options: ["非特異的な防御機構である", "即時に反応する", "免疫記憶がある", "生まれつき備わっている"],
-        answer: 2, // 免疫記憶がある
-        explanation: "獲得免疫は、一度遭遇した病原体を記憶し、次に遭遇した際に迅速かつ強力に反応することができます。"
-      },
-      {
-        question: "母子免疫に関与する免疫グロブリンはどれですか？",
-        options: ["IgA", "IgD", "IgE", "IgG"],
-        answer: 3, // IgG
-        explanation: "IgG抗体は、胎盤を通過できる唯一の抗体であり、母乳にも含まれており、新生児の免疫に貢献します。"
-      },
-      {
-        question: "IV型遅延型アレルギー反応が現れるまでの一般的な時間は？",
-        options: ["数分以内", "1-2時間後", "6-12時間後", "24-72時間後"],
-        answer: 3, // 24-72時間後
-        explanation: "IV型遅延型アレルギー反応は、抗原 encountered 後、24〜72時間後に発症します。"
-      },
-      {
-        question: "アレルギー性鼻炎は主にどの型のアレルギー反応に分類されますか？",
-        options: ["I型", "II型", "III型", "IV型"],
-        answer: 0, // I型
-        explanation: "アレルギー性鼻炎は、I型即時型アレルギー反応によって引き起こされます。"
-      },
-      {
-        question: "リンパ球の成熟に重要な器官はどれですか？",
-        options: ["肝臓", "腎臓", "心臓", "胸腺"],
-        answer: 3, // 胸腺
-        explanation: "T細胞は、胸腺で成熟し、自己と非自己を区別する能力を獲得します。"
-      },
-      {
-        question: "次のうち、二次リンパ組織はどれですか？（複数選択可）",
-        options: ["骨髄", "リンパ節", "脾臓", "扁桃"],
-        answer: [1, 2, 3], // リンパ節, 脾臓, 扁桃
-        explanation: "リンパ節、脾臓、扁桃は、二次リンパ組織であり、免疫応答が起こる主要な場所です。"
-      },
-      {
-        question: "抗原抗体反応の一つである凝集反応の原理は何ですか？",
-        options: [
-          "抗原と抗体の結合により、可溶性の複合体が形成される",
-          "抗原と抗体の結合により、不溶性の沈殿物が形成される",
-          "抗原と抗体の結合により、細胞が溶解される",
-          "抗原と抗体の結合により、補体系が活性化される",
-        ],
-        answer: 1, // 抗原と抗体の結合により、不溶性の沈殿物が形成される
-        explanation: "凝集反応では、抗原と抗体が結合して、目に見える不溶性の凝集塊を形成します。"
-      },
-      {
-        question: "次のうち、自然免疫に属するものはどれですか？",
-        options: ["食細胞", "キラーT細胞", "メモリーB細胞", "ヘルパーT細胞"],
-        answer: 0, // 食細胞
-        explanation: "食細胞は、自然免疫の最初の防御線として機能し、病原体を貪食します。"
-      },
-      {
-        question: "免疫不全症の一つである重症複合免疫不全症（SCID）で欠損している細胞はどれですか？",
-        options: ["B細胞", "T細胞", "NK細胞", "マクロファージ"],
-        answer: 1, // T細胞
-        explanation: "SCIDは、T細胞の欠損または機能不全を特徴とする重篤な免疫不全症です。"
-      },
-      {
-        question: "次のうち、体液性免疫に関与する細胞はどれですか？",
-        options: ["ヘルパーT細胞", "キラーT細胞", "B細胞", "マクロファージ"],
-        answer: 2, // B細胞
-        explanation: "B細胞は、体液性免疫において中心的な役割を果たし、抗体を産生します。"
-      },
-      {
-        question: "次のうち、自己免疫疾患の例として正しいものはどれですか？",
-        options: ["インフルエンザ", "関節リウマチ", "肺炎", "髄膜炎"],
-        answer: 1, // 関節リウマチ
-        explanation: "関節リウマチは、自己免疫疾患の一例であり、免疫系が自分の関節を攻撃します。"
-      },
-      {
-        question: "抗体産生に関与するリンパ球はどれですか？",
-        options: ["T細胞", "B細胞", "NK細胞", "樹状細胞"],
-        answer: 1, // B細胞
-        explanation: "B細胞は、抗体を産生する役割を担うリンパ球です。"
-      },
-      {
-        question: "免疫応答において、抗原を認識し、B細胞を活性化させる働きを持つ細胞はどれですか？",
-        options: ["ヘルパーT細胞", "キラーT細胞", "形質細胞", "樹状細胞"],
-        answer: 0, // ヘルパーT細胞
-        explanation: "ヘルパーT細胞は、抗原を認識し、B細胞を含む他の免疫細胞を活性化する役割を担います。"
-      },
-      {
-        question: "次のうち、獲得免疫の働きを持たないものはどれですか？",
-        options: ["抗体産生", "免疫記憶", "食作用", "特異的免疫応答"],
-        answer: 2, // 食作用
-        explanation: "食作用は、自然免疫の重要なメカニズムであり、獲得免疫の特徴ではありません。"
-      },
-      {
-        question: "次のうち、抗体の主な産生部位はどこですか？",
-        options: ["胸腺", "骨髄", "リンパ節", "脾臓"],
-        answer: 1, // 骨髄
-        explanation: "B細胞は、骨髄で成熟し、抗体を産生します。"
-      },
-      {
-        question: "免疫グロブリンの基本構造を構成するタンパク質はどれですか？",
-        options: ["アルブミン", "ヘモグロビン", "ケラチン", "グロブリン"],
-        answer: 3, // グロブリン
-        explanation: "免疫グロブリンは、グロブリンと呼ばれるタンパク質から構成されています。"
-      },
-      {
-        question: "次のうち、細胞性免疫に関与するリンパ球はどれですか？",
-        options: ["B細胞", "T細胞", "NK細胞", "形質細胞"],
-        answer: 1, // T細胞
-        explanation: "T細胞は、細胞性免疫において中心的な役割を果たします。"
-      },
-      {
-        question: "免疫系の異常により、自己の組織を攻撃してしまう状態を何と呼びますか？",
-        options: ["免疫不全", "自己免疫", "免疫寛容", "移植免疫"],
-        answer: 1, // 自己免疫
-        explanation: "自己免疫は、免疫系が自己の組織を攻撃してしまう状態です。"
-      },
-      {
-        question: "次のうち、血液型抗原の種類を決定する物質は何ですか？",
-        options: ["糖脂質", "糖タンパク質", "リン脂質", "核酸"],
-        answer: 1, // 糖タンパク質
-        explanation: "血液型抗原は、赤血球の表面にある糖タンパク質によって決定されます。"
-      },
-      {
-        question: "アレルギー反応において、肥満細胞からヒスタミンを放出させる免疫グロブリンはどれですか？",
-        options: ["IgA", "IgD", "IgE", "IgG"],
-        answer: 2, // IgE
-        explanation: "IgE抗体は、アレルギー反応において、肥満細胞に結合し、ヒスタミンの放出を引き起こします。"
-      },
-      {
-        question: "次のうち、胸腺で成熟するリンパ球はどれですか？",
-        options: ["B細胞", "T細胞", "NK細胞", "形質細胞"],
-        answer: 1, // T細胞
-        explanation: "T細胞は、胸腺で成熟し、自己と非自己を識別する能力を獲得します。"
-      },
-      {
-        question: "次のうち、獲得免疫の特徴でないものはどれですか？",
-        options: ["特異性", "多様性", "自然免疫との連携", "即時性"],
-        answer: 3, // 即時性
-        explanation: "獲得免疫は、自然免疫に比べて反応に時間がかかりますが、特異性が高く、免疫記憶があります。"
-      },
-      {
-        question: "次のうち、液性免疫に関与しない細胞はどれですか？",
-        options: ["B細胞", "形質細胞", "ヘルパーT細胞", "キラーT細胞"],
-        answer: 3, // キラーT細胞
-        explanation: "キラーT細胞は、細胞性免疫において主要な役割を果たし、感染細胞やがん細胞を直接攻撃します。"
-      }
+    {
+question: "自然免疫に関与する細胞はどれですか？",
+options: ["B細胞", "T細胞", "マクロファージ", "形質細胞"],
+answer: 2, // マクロファージ
+explanation: "マクロファージは、自然免疫において重要な食細胞です。"
+},
+{
+question: "獲得免疫に関与する細胞はどれですか？（複数選択可）",
+options: ["NK細胞", "B細胞", "好中球", "T細胞"],
+answer: [1, 3], // B細胞, T細胞
+explanation: "B細胞とT細胞は、獲得免疫において中心的な役割を果たします。"
+},
+{
+question: "免疫グロブリンの主な働きはどれですか？",
+options: ["細胞性免疫", "液性免疫", "補体系の活性化", "サイトカインの産生"],
+answer: 1, // 液性免疫
+explanation: "免疫グロブリン（抗体）は、液性免疫において重要な役割を果たします。"
+},
+{
+question: "次のうち、抗原提示細胞の役割を果たすものはどれですか？",
+options: ["赤血球", "血小板", "樹状細胞", "好酸球"],
+answer: 2, // 樹状細胞
+explanation: "樹状細胞は、抗原提示細胞として、T細胞に抗原を提示します。"
+},
+{
+question: "免疫寛容の仕組みとして正しいものはどれですか？",
+options: ["自己抗原に対する反応性の獲得", "自己反応性リンパ球の除去", "炎症性サイトカインの産生", "抗体産生の亢進"],
+answer: 1, // 自己反応性リンパ球の除去
+explanation: "免疫寛容は、自己反応性リンパ球を除去することで自己免疫疾患を防ぎます。"
+},
+{
+question: "I型即時型アレルギー反応に関与する主な抗体はどれですか？",
+options: ["IgA", "IgE", "IgG", "IgM"],
+answer: 1, // IgE
+explanation: "IgE抗体は、I型即時型アレルギー反応において中心的な役割を果たします。"
+},
+{
+question: "II型細胞障害型アレルギーの例として正しいものはどれですか？",
+options: ["花粉症", "接触性皮膚炎", "輸血反応", "全身性エリテマトーデス"],
+answer: 2, // 輸血反応
+explanation: "輸血反応は、II型細胞障害型アレルギーの一例です。"
+},
+{
+question: "III型免疫複合体型アレルギーにおいて、主な病態を引き起こす要因は何ですか？",
+options: ["T細胞の過剰活性化", "抗原抗体複合体の沈着", "肥満細胞の脱顆粒", "NK細胞の活性化"],
+answer: 1, // 抗原抗体複合体の沈着
+explanation: "III型免疫複合体型アレルギーでは、抗原抗体複合体の沈着が組織 damage を引き起こします。"
+},
+{
+question: "IV型遅延型アレルギーの特徴として正しいものはどれですか？",
+options: ["IgE抗体が主要な役割を果たす", "反応は数分以内に現れる", "T細胞が中心的な役割を果たす", "補体系の活性化が主な機序である"],
+answer: 2, // T細胞が中心的な役割を果たす
+explanation: "IV型遅延型アレルギーは、T細胞が中心的な役割を果たすアレルギー反応です。"
+},
+{
+question: "次のうち、I型即時型アレルギーの症状として最も典型的なものはどれですか？",
+options: ["発熱", "蕁麻疹", "関節痛", "倦怠感"],
+answer: 1, // 蕁麻疹
+explanation: "蕁麻疹は、I型即時型アレルギーの典型的な症状の一つです。"
+},
+{
+question: "II型細胞障害型アレルギーにおいて、主に関与する抗体はどれですか？（複数選択可）",
+options: ["IgE", "IgG", "IgA", "IgM"],
+answer: [1, 3], // IgG, IgM
+explanation: "IgG抗体とIgM抗体は、II型細胞障害型アレルギーにおいて主に関与します。"
+},
+{
+question: "補体系の主な働きはどれですか？",
+options: ["抗体産生", "細胞性免疫", "病原体の溶解", "抗原提示"],
+answer: 2, // 病原体の溶解
+explanation: "補体系は、病原体を直接攻撃し溶解する役割を担います。"
+},
+{
+question: "次のうち、獲得免疫の特徴として正しいものはどれですか？",
+options: ["非特異的な防御機構である", "即時に反応する", "免疫記憶がある", "生まれつき備わっている"],
+answer: 2, // 免疫記憶がある
+explanation: "獲得免疫は、一度遭遇した病原体を記憶し、次に遭遇した際に迅速かつ強力に反応することができます。"
+},
+{
+question: "母子免疫に関与する免疫グロブリンはどれですか？",
+options: ["IgA", "IgD", "IgE", "IgG"],
+answer: 3, // IgG
+explanation: "IgG抗体は、胎盤を通過できる唯一の抗体であり、母乳にも含まれており、新生児の免疫に貢献します。"
+},
+{
+question: "IV型遅延型アレルギー反応が現れるまでの一般的な時間は？",
+options: ["数分以内", "1-2時間後", "6-12時間後", "24-72時間後"],
+answer: 3, // 24-72時間後
+explanation: "IV型遅延型アレルギー反応は、抗原 encountered 後、24〜72時間後に発症します。"
+},
+{
+question: "アレルギー性鼻炎は主にどの型のアレルギー反応に分類されますか？",
+options: ["I型", "II型", "III型", "IV型"],
+answer: 0, // I型
+explanation: "アレルギー性鼻炎は、I型即時型アレルギー反応によって引き起こされます。"
+},
+{
+question: "リンパ球の成熟に重要な器官はどれですか？",
+options: ["肝臓", "腎臓", "心臓", "胸腺"],
+answer: 3, // 胸腺
+explanation: "T細胞は、胸腺で成熟し、自己と非自己を区別する能力を獲得します。"
+},
+{
+question: "次のうち、二次リンパ組織はどれですか？（複数選択可）",
+options: ["骨髄", "リンパ節", "脾臓", "扁桃"],
+answer: [1, 2, 3], // リンパ節, 脾臓, 扁桃
+explanation: "リンパ節、脾臓、扁桃は、二次リンパ組織であり、免疫応答が起こる主要な場所です。"
+},
+{
+question: "抗原抗体反応の一つである凝集反応の原理は何ですか？",
+options: [
+"抗原と抗体の結合により、可溶性の複合体が形成される",
+"抗原と抗体の結合により、不溶性の沈殿物が形成される",
+"抗原と抗体の結合により、細胞が溶解される",
+"抗原と抗体の結合により、補体系が活性化される",
+],
+answer: 1, // 抗原と抗体の結合により、不溶性の沈殿物が形成される
+explanation: "凝集反応では、抗原と抗体が結合して、目に見える不溶性の凝集塊を形成します。"
+},
+{
+question: "次のうち、自然免疫に属するものはどれですか？",
+options: ["食細胞", "キラーT細胞", "メモリーB細胞", "ヘルパーT細胞"],
+answer: 0, // 食細胞
+explanation: "食細胞は、自然免疫の最初の防御線として機能し、病原体を貪食します。"
+},
+{
+question: "免疫不全症の一つである重症複合免疫不全症（SCID）で欠損している細胞はどれですか？",
+options: ["B細胞", "T細胞", "NK細胞", "マクロファージ"],
+answer: 1, // T細胞
+explanation: "SCIDは、T細胞の欠損または機能不全を特徴とする重篤な免疫不全症です。"
+},
+{
+question: "次のうち、体液性免疫に関与する細胞はどれですか？",
+options: ["ヘルパーT細胞", "キラーT細胞", "B細胞", "マクロファージ"],
+answer: 2, // B細胞
+explanation: "B細胞は、体液性免疫において中心的な役割を果たし、抗体を産生します。"
+},
+{
+question: "次のうち、自己免疫疾患の例として正しいものはどれですか？",
+options: ["インフルエンザ", "関節リウマチ", "肺炎", "髄膜炎"],
+answer: 1, // 関節リウマチ
+explanation: "関節リウマチは、自己免疫疾患の一例であり、免疫系が自分の関節を攻撃します。"
+},
+{
+question: "抗体産生に関与するリンパ球はどれですか？",
+options: ["T細胞", "B細胞", "NK細胞", "樹状細胞"],
+answer: 1, // B細胞
+explanation: "B細胞は、抗体を産生する役割を担うリンパ球です。"
+},
+{
+question: "免疫応答において、抗原を認識し、B細胞を活性化させる働きを持つ細胞はどれですか？",
+options: ["ヘルパーT細胞", "キラーT細胞", "形質細胞", "樹状細胞"],
+answer: 0, // ヘルパーT細胞
+explanation: "ヘルパーT細胞は、抗原を認識し、B細胞を含む他の免疫細胞を活性化する役割を担います。"
+},
+{
+question: "次のうち、獲得免疫の働きを持たないものはどれですか？",
+options: ["抗体産生", "免疫記憶", "食作用", "特異的免疫応答"],
+answer: 2, // 食作用
+explanation: "食作用は、自然免疫の重要なメカニズムであり、獲得免疫の特徴ではありません。"
+},
+{
+question: "次のうち、抗体の主な産生部位はどこですか？",
+options: ["胸腺", "骨髄", "リンパ節", "脾臓"],
+answer: 1, // 骨髄
+explanation: "B細胞は、骨髄で成熟し、抗体を産生します。"
+},
+{
+question: "免疫グロブリンの基本構造を構成するタンパク質はどれですか？",
+options: ["アルブミン", "ヘモグロビン", "ケラチン", "グロブリン"],
+answer: 3, // グロブリン
+explanation: "免疫グロブリンは、グロブリンと呼ばれるタンパク質から構成されています。"
+},
+{
+question: "次のうち、細胞性免疫に関与するリンパ球はどれですか？",
+options: ["B細胞", "T細胞", "NK細胞", "形質細胞"],
+answer: 1, // T細胞
+explanation: "T細胞は、細胞性免疫において中心的な役割を果たします。"
+},
+{
+question: "免疫系の異常により、自己の組織を攻撃してしまう状態を何と呼びますか？",
+options: ["免疫不全", "自己免疫", "免疫寛容", "移植免疫"],
+answer: 1, // 自己免疫
+explanation: "自己免疫は、免疫系が自己の組織を攻撃してしまう状態です。"
+},
+{
+question: "次のうち、血液型抗原の種類を決定する物質は何ですか？",
+options: ["糖脂質", "糖タンパク質", "リン脂質", "核酸"],
+answer: 1, // 糖タンパク質
+explanation: "血液型抗原は、赤血球の表面にある糖タンパク質によって決定されます。"
+},
+{
+question: "アレルギー反応において、肥満細胞からヒスタミンを放出させる免疫グロブリンはどれですか？",
+options: ["IgA", "IgD", "IgE", "IgG"],
+answer: 2, // IgE
+explanation: "IgE抗体は、アレルギー反応において、肥満細胞に結合し、ヒスタミンの放出を引き起こします。"
+},
+{
+question: "次のうち、胸腺で成熟するリンパ球はどれですか？",
+options: ["B細胞", "T細胞", "NK細胞", "形質細胞"],
+answer: 1, // T細胞
+explanation: "T細胞は、胸腺で成熟し、自己と非自己を識別する能力を獲得します。"
+},
+{
+question: "次のうち、獲得免疫の特徴でないものはどれですか？",
+options: ["特異性", "多様性", "自然免疫との連携", "即時性"],
+answer: 3, // 即時性
+explanation: "獲得免疫は、自然免疫に比べて反応に時間がかかりますが、特異性が高く、免疫記憶があります。"
+},
+{
+question: "次のうち、液性免疫に関与しない細胞はどれですか？",
+options: ["B細胞", "形質細胞", "ヘルパーT細胞", "キラーT細胞"],
+answer: 3, // キラーT細胞
+explanation: "キラーT細胞は、細胞性免疫において主要な役割を果たし、感染細胞やがん細胞を直接攻撃します。"
+}
+      // ... 他の問題をここに追加 ...
     ];
-
 
     let currentQuestion = 0;
     let correctAnswers = 0;
+    let userAnswers = new Array(quizData.length).fill(null);
 
     function startQuiz() {
       const userName = document.getElementById('user-name').value;
@@ -323,17 +337,14 @@
             ${question.options.map((option, index) => `
               <li>
                 <label>
-                  ${Array.isArray(question.answer) ? 
-                    `<input type="checkbox" name="answer${currentQuestion}" value="${index}">` :
-                    `<input type="radio" name="answer${currentQuestion}" value="${index}">`
-                  }
+                  <input type="radio" name="answer${currentQuestion}" value="${index}" onchange="handleSelection(${index})" ${userAnswers[currentQuestion] === index ? 'checked' : ''}>
                   ${option}
                 </label>
               </li>
             `).join("")}
           </ul>
-          <button onclick="checkAnswer()">答えを確認</button>
-          <div id="answer${currentQuestion}" class="answer"></div>
+          <button onclick="showExplanation()">答えの説明を見る</button>
+          <div id="explanation${currentQuestion}" class="explanation" style="display: none;"></div>
         </div>
       `;
       document.getElementById("quiz").innerHTML = quizHtml;
@@ -341,33 +352,28 @@
       document.getElementById("total").textContent = quizData.length;
     }
 
-    function checkAnswer() {
+    function handleSelection(selectedIndex) {
       const question = quizData[currentQuestion];
-      let selectedOptions;
-      let isCorrect = false;
-
-      if (Array.isArray(question.answer)) {
-        selectedOptions = Array.from(document.querySelectorAll(`input[name="answer${currentQuestion}"]:checked`)).map(el => parseInt(el.value));
-        isCorrect = selectedOptions.length === question.answer.length && selectedOptions.every(val => question.answer.includes(val));
-      } else {
-        const selectedOption = document.querySelector(`input[name="answer${currentQuestion}"]:checked`);
-        if (!selectedOption) {
-          alert('回答を選択してください。');
-          return;
-        }
-        selectedOptions = parseInt(selectedOption.value);
-        isCorrect = selectedOptions === question.answer;
-      }
-
-      const answerDiv = document.getElementById(`answer${currentQuestion}`);
-      if (isCorrect) {
+      const isCorrect = selectedIndex === question.answer;
+      
+      if (userAnswers[currentQuestion] === null && isCorrect) {
         correctAnswers++;
+      } else if (userAnswers[currentQuestion] !== null && userAnswers[currentQuestion] === question.answer && !isCorrect) {
+        correctAnswers--;
       }
-      answerDiv.innerHTML = isCorrect ? "正解です！" : `不正解です。正解は: ${Array.isArray(question.answer) ? question.options.filter((_, i) => question.answer.includes(i)).join(', ') : question.options[question.answer]}`;
-      answerDiv.innerHTML += `<p>${question.explanation}</p>`;
-      answerDiv.style.color = isCorrect ? "green" : "red";
+      
+      userAnswers[currentQuestion] = selectedIndex;
     }
 
+    function showExplanation() {
+      const question = quizData[currentQuestion];
+      const explanationDiv = document.getElementById(`explanation${currentQuestion}`);
+      explanationDiv.innerHTML = `
+        <p>正解: ${question.options[question.answer]}</p>
+        <p>${question.explanation}</p>
+      `;
+      explanationDiv.style.display = 'block';
+    }
 
     function prevQuestion() {
       if (currentQuestion > 0) {
@@ -400,7 +406,6 @@
       document.querySelector('.navigation').style.display = 'none';
       document.querySelector('.progress').style.display = 'none';
 
-      // 正答率が80%以上のときのみ、出席フォームへのボタンを表示
       if (percentage >= 80) {
         document.getElementById('attendance-link').style.display = 'block';
       }
@@ -409,16 +414,15 @@
     function resetQuiz() {
       currentQuestion = 0;
       correctAnswers = 0;
+      userAnswers = new Array(quizData.length).fill(null);
       document.getElementById('result').style.display = 'none';
       document.getElementById('attendance-link').style.display = 'none'; 
       document.getElementById('name-form').style.display = 'block';
       document.getElementById('user-name').value = '';
-      Array.from(document.querySelectorAll('input[type="radio"]:checked, input[type="checkbox"]:checked')).forEach(el => el.checked = false);
-      document.querySelectorAll('.answer').forEach(el => el.innerHTML = '');
     }
 
     function openAttendanceForm() {
-      window.open("https://docs.google.com/forms/d/e/1FAIpQLSexI-Zyj6AlGAwC2sd02JlijeY8Na22Xj_Cv6C5vqZi_PSBIg/viewform", "_blank");
+      window.open("https://docs.google.com/forms/d/e/1FAIpQLSfOxFS469ZKPQdbnB6nVpsAatoTiTu3WiFjoY7az-v-tyTFAw/viewform", "_blank");
     }
   </script>
 </body>
