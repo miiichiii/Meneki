@@ -263,7 +263,7 @@
       options[index].classList.add('selected');
 
       const question = quizData[currentQuestion];
-  userAnswers[currentQuestion] = index;
+  userAnswers[currentQuestion] = question.options.indexOf(shuffledOptions[index]);
       
       const explanationEl = document.getElementById('explanation');
       explanationEl.innerHTML = `
