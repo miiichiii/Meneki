@@ -368,7 +368,7 @@
       }
     ];
 
-    let currentQuestion = 0;
+     let currentQuestion = 0;
     let score = 0;
     let userAnswers = [];
     let shuffledOptions = [];
@@ -388,14 +388,14 @@
       setTimeout(() => {
         const question = quizData[currentQuestion];
         document.getElementById('question').textContent = question.question;
-        
+
         shuffledOptions = shuffleArray([...question.options]);
         const correctAnswerIndex = shuffledOptions.indexOf(question.options[question.answer]);
-        
+
         const optionsHtml = shuffledOptions.map((option, index) => `
           <div class="option" onclick="selectOption(${index})">${option}</div>
         `).join('');
-        
+
         document.getElementById('options').innerHTML = optionsHtml;
         document.getElementById('explanation').style.display = 'none';
         quizData[currentQuestion].shuffledAnswer = correctAnswerIndex;
@@ -416,9 +416,12 @@
         return;
       }
 
+      // 全ての選択肢を無効化
       options.forEach(option => {
         option.classList.add('disabled');
       });
+
+      // 選択された選択肢にselectedクラスを追加
       options[index].classList.add('selected');
 
       const question = quizData[currentQuestion];
@@ -434,9 +437,11 @@
       `;
       explanationEl.style.display = 'block';
 
+      // 正解の場合、正解の選択肢にcorrectクラスを追加
       if (index === question.shuffledAnswer) {
         explanationEl.style.backgroundColor = '#e8f5e9';
         explanationEl.style.borderLeftColor = '#4caf50';
+        options[index].classList.add('correct'); 
       } else {
         explanationEl.style.backgroundColor = '#ffebee';
         explanationEl.style.borderLeftColor = '#f44336';
@@ -447,9 +452,8 @@
       // 選択肢が選択されているかチェック
       const selectedOption = document.querySelector('.option.selected');
       if (selectedOption === null) {
-        // 選択肢が選択されていなければアラートを表示
         alert('選択肢を選んでください');
-        return; // 関数を終了
+        return; 
       }
 
       if (currentQuestion < quizData.length - 1) {
@@ -461,44 +465,46 @@
     }
 
     function showResult() {
-  score = quizData.reduce((total, question, index) => 
-    total + (question.shuffledAnswer === userAnswers[index] ? 1 : 0), 0);
+      score = quizData.reduce((total, question, index) => 
+        total + (question.shuffledAnswer === userAnswers[index] ? 1 : 0), 0);
 
-  const resultContainer = document.getElementById('result-container');
-  const quizContainer = document.getElementById('quiz-container');
-  quizContainer.style.display = 'none';
+      const resultContainer = document.getElementById('result-container');
+      const quizContainer = document.getElementById('quiz-container');
+      quizContainer.style.display = 'none';
 
-  const percentage = (score / quizData.length) * 100;
-  let resultHtml = `
-    <h2>クイズ結果</h2>
-    <p>正解数: ${score} / ${quizData.length}</p>
-    <p>正答率: ${percentage.toFixed(2)}%</p>
-  `;
+      const percentage = (score / quizData.length) * 100;
+      let resultHtml = `
+        <h2>クイズ結果</h2>
+        <p>正解数: ${score} / ${quizData.length}</p>
+        <p>正答率: ${percentage.toFixed(2)}%</p>
+      `;
 
-  quizData.forEach((question, index) => {
-    const isCorrect = question.shuffledAnswer === userAnswers[index];
-    resultHtml += `
-      <div class="result-card">
-        <h3>問題 ${index + 1}</h3>
-        <p class="result-status ${isCorrect ? 'correct' : 'incorrect'}">
-          ${isCorrect ? '正解' : '不正解'}
-        </p>
-        <p><strong>質問:</strong> ${question.question}</p>
-        <p><strong>あなたの回答:</strong> ${question.options[userAnswers[index]] || '未回答'}</p>
-        <p><strong>正解:</strong> ${question.options[question.answer]}</p> <p><strong>説明:</strong> ${question.explanation}</p>
-      </div>
-    `;
-  });
+      quizData.forEach((question, index) => {
+        const userAnswerIndex = userAnswers[index];
+        const isCorrect = question.shuffledAnswer === userAnswerIndex;
+        resultHtml += `
+          <div class="result-card">
+            <h3>問題 ${index + 1}</h3>
+            <p class="result-status ${isCorrect ? 'correct' : 'incorrect'}">
+              ${isCorrect ? '正解' : '不正解'}
+            </p>
+            <p><strong>質問:</strong> ${question.question}</p>
+            <p><strong>あなたの回答:</strong> ${question.options[userAnswerIndex] || '未回答'}</p>
+            <p><strong>正解:</strong> ${question.options[question.answer]}</p>
+            <p><strong>説明:</strong> ${question.explanation}</p>
+          </div>
+        `;
+      });
 
-  resultHtml += `<button class="nav-button" onclick="restartQuiz()">もう一度挑戦する</button>`;
-  resultContainer.innerHTML = resultHtml;
+      resultHtml += `<button class="nav-button" onclick="restartQuiz()">もう一度挑戦する</button>`;
+      resultContainer.innerHTML = resultHtml;
 
       if (percentage >= 80) {
         const attendanceLink = document.getElementById('attendance-link');
         attendanceLink.style.display = 'block';
         attendanceLink.innerHTML = `
           <p>おめでとうございます！80%以上の正答率です。</p>
-          <a href="https://forms.gle/1T6EGGjMBKwQhGeH6" target="_blank">出席確認フォームに回答する</a>
+          <a href="https://forms.gle/xxxxxxxxxxxxxxxx" target="_blank">出席確認フォームに回答する</a>
         `;
       }
     }
