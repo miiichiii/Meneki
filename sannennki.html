@@ -59,6 +59,11 @@
       background-color: #007aff;
       color: #fff;
     }
+    .option.disabled {
+      opacity: 0.5;
+      cursor: default;
+      pointer-events: none;
+    }
     .option::after {
       content: '';
       position: absolute;
@@ -406,7 +411,14 @@
 
     function selectOption(index) {
       const options = document.querySelectorAll('.option');
-      options.forEach(option => option.classList.remove('selected'));
+      // すでに選択肢が選択されている場合は何もしない
+      if (options[index].classList.contains('disabled')) {
+        return;
+      }
+
+      options.forEach(option => {
+        option.classList.add('disabled');
+      });
       options[index].classList.add('selected');
 
       const question = quizData[currentQuestion];
