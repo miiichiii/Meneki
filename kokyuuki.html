@@ -303,39 +303,38 @@
     }
 
     function showResult() {
-  score = quizData.reduce((total, question, index) => 
-    total + (question.shuffledAnswer === userAnswers[index] ? 1 : 0), 0);
+      score = quizData.reduce((total, question, index) => 
+        total + (question.shuffledAnswer === userAnswers[index] ? 1 : 0), 0);
 
-  const resultContainer = document.getElementById('result-container');
-  const quizContainer = document.getElementById('quiz-container');
-  quizContainer.style.display = 'none';
+      const resultContainer = document.getElementById('result-container');
+      const quizContainer = document.getElementById('quiz-container');
+      quizContainer.style.display = 'none';
 
-  const percentage = (score / quizData.length) * 100;
-  let resultHtml = `
-    <h2>クイズ結果</h2>
-    <p>正解数: ${score} / ${quizData.length}</p>
-    <p>正答率: ${percentage.toFixed(2)}%</p>
-  `;
+      const percentage = (score / quizData.length) * 100;
+      let resultHtml = `
+        <h2>クイズ結果</h2>
+        <p>正解数: ${score} / ${quizData.length}</p>
+        <p>正答率: ${percentage.toFixed(2)}%</p>
+      `;
 
-  quizData.forEach((question, index) => {
-    const userAnswerIndex = userAnswers[index]; // ユーザーが選択した選択肢のインデックス
-    const isCorrect = question.shuffledAnswer === userAnswerIndex;
-    resultHtml += `
-      <div class="result-card">
-        <h3>問題 ${index + 1}</h3>
-        <p class="result-status ${isCorrect ? 'correct' : 'incorrect'}">
-          ${isCorrect ? '正解' : '不正解'}
-        </p>
-        <p><strong>質問:</strong> ${question.question}</p>
-        <p><strong>あなたの回答:</strong> ${question.options[userAnswerIndex] || '未回答'}</p> 
-        <p><strong>正解:</strong> ${question.options[question.answer]}</p>
-        <p><strong>説明:</strong> ${question.explanation}</p>
-      </div>
-    `;
-  });
+      quizData.forEach((question, index) => {
+        const isCorrect = question.shuffledAnswer === userAnswers[index];
+        resultHtml += `
+          <div class="result-card">
+            <h3>問題 ${index + 1}</h3>
+            <p class="result-status ${isCorrect ? 'correct' : 'incorrect'}">
+              ${isCorrect ? '正解' : '不正解'}
+            </p>
+            <p><strong>質問:</strong> ${question.question}</p>
+            <p><strong>あなたの回答:</strong> ${question.options[userAnswers[index]] || '未回答'}</p>
+            <p><strong>正解:</strong> ${question.options[question.answer]}</p>
+            <p><strong>説明:</strong> ${question.explanation}</p>
+          </div>
+        `;
+      });
 
-  resultHtml += `<button class="nav-button" onclick="restartQuiz()">もう一度挑戦する</button>`;
-  resultContainer.innerHTML = resultHtml;
+      resultHtml += `<button class="nav-button" onclick="restartQuiz()">もう一度挑戦する</button>`;
+      resultContainer.innerHTML = resultHtml;
 
       if (percentage >= 80) {
         const attendanceLink = document.getElementById('attendance-link');
