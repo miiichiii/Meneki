@@ -206,7 +206,7 @@
       }
     ];
 
-     let currentQuestion = 0;
+    let currentQuestion = 0;
     let score = 0;
     let userAnswers = [];
     let shuffledOptions = [];
@@ -228,15 +228,12 @@
         document.getElementById('question').textContent = question.question;
 
         shuffledOptions = shuffleArray([...question.options]);
-        const correctAnswerIndex = shuffledOptions.indexOf(question.options[question.answer]);
-
         const optionsHtml = shuffledOptions.map((option, index) => `
           <div class="option" onclick="selectOption(${index})">${option}</div>
         `).join('');
 
         document.getElementById('options').innerHTML = optionsHtml;
         document.getElementById('explanation').style.display = 'none';
-        quizData[currentQuestion].shuffledAnswer = correctAnswerIndex;
 
         quizContent.classList.remove('fade-out');
         quizContent.classList.add('fade-in');
@@ -249,22 +246,20 @@
 
     function selectOption(index) {
       const options = document.querySelectorAll('.option');
-      // すでに選択肢が選択されている場合は何もしない
       if (options[index].classList.contains('disabled')) {
         return;
       }
 
-      // 全ての選択肢を無効化
       options.forEach(option => {
         option.classList.add('disabled');
       });
 
-      // 選択された選択肢にselectedクラスを追加
       options[index].classList.add('selected');
 
       const question = quizData[currentQuestion];
-  userAnswers[currentQuestion] = question.options.indexOf(shuffledOptions[index]);
-      
+      const selectedAnswerIndex = question.options.indexOf(shuffledOptions[index]);
+      userAnswers[currentQuestion] = selectedAnswerIndex;
+
       const explanationEl = document.getElementById('explanation');
       explanationEl.innerHTML = `
         <div class="explanation-header">
@@ -275,8 +270,7 @@
       `;
       explanationEl.style.display = 'block';
 
-      // 正解の場合、正解の選択肢にcorrectクラスを追加
-      if (index === question.shuffledAnswer) {
+      if (selectedAnswerIndex === question.answer) {
         explanationEl.style.backgroundColor = '#e8f5e9';
         explanationEl.style.borderLeftColor = '#4caf50';
         options[index].classList.add('correct'); 
@@ -287,7 +281,6 @@
     }
 
     function nextQuestion() {
-      // 選択肢が選択されているかチェック
       const selectedOption = document.querySelector('.option.selected');
       if (selectedOption === null) {
         alert('選択肢を選んでください');
@@ -303,8 +296,8 @@
     }
 
     function showResult() {
-      score = quizData.reduce((total, question, index) => 
-        total + (question.shuffledAnswer === userAnswers[index] ? 1 : 0), 0);
+      score = userAnswers.reduce((total, answer, index) => 
+        total + (answer === quizData[index].answer ? 1 : 0), 0);
 
       const resultContainer = document.getElementById('result-container');
       const quizContainer = document.getElementById('quiz-container');
@@ -318,7 +311,7 @@
       `;
 
       quizData.forEach((question, index) => {
-        const isCorrect = question.shuffledAnswer === userAnswers[index];
+        const isCorrect = userAnswers[index] === question.answer;
         resultHtml += `
           <div class="result-card">
             <h3>問題 ${index + 1}</h3>
