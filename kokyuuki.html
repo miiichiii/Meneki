@@ -263,8 +263,8 @@
       options[index].classList.add('selected');
 
       const question = quizData[currentQuestion];
-      userAnswers[currentQuestion] = index;
-
+  userAnswers[currentQuestion] = question.options[shuffledOptions[index]];
+      
       const explanationEl = document.getElementById('explanation');
       explanationEl.innerHTML = `
         <div class="explanation-header">
@@ -326,7 +326,7 @@
               ${isCorrect ? '正解' : '不正解'}
             </p>
             <p><strong>質問:</strong> ${question.question}</p>
-            <p><strong>あなたの回答:</strong> ${quizData[index].options[userAnswers[index]] || '未回答'}</p>
+            <p><strong>あなたの回答:</strong> ${userAnswers[index] || '未回答'}</p>
             <p><strong>正解:</strong> ${question.options[question.answer]}</p>
             <p><strong>説明:</strong> ${question.explanation}</p>
           </div>
