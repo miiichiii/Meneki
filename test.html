@@ -241,13 +241,15 @@
 
         shuffledOptions = shuffleArray([...question.options]);
 
+        // 修正箇所: shuffledAnswer をここで更新
+        quizData[currentQuestion].shuffledAnswer = shuffledOptions.indexOf(question.options[question.answer]);
+
         const optionsHtml = shuffledOptions.map((option, index) => `
           <div class="option" onclick="selectOption(${index})">${option}</div>
         `).join('');
 
         document.getElementById('options').innerHTML = optionsHtml;
         document.getElementById('explanation').style.display = 'none';
-        quizData[currentQuestion].shuffledAnswer = shuffledOptions.indexOf(question.options[question.answer]);
 
         quizContent.classList.remove('fade-out');
         quizContent.classList.add('fade-in');
@@ -257,7 +259,7 @@
         }, 500);
       }, 500);
     }
-
+    
     function selectOption(index) {
       const options = document.querySelectorAll('.option');
       if (options[index].classList.contains('disabled')) {
