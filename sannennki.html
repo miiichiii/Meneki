@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>水の出納、酸塩基平衡クイズ</title>
+  <title>酸塩基クイズ</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -171,7 +171,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>水の出納、酸塩基平衡クイズ</h1>
+    <h1>酸塩基クイズ</h1>
     <div id="quiz-container" class="quiz-container">
       <div id="quiz-content">
         <div id="question" class="question"></div>
@@ -183,10 +183,10 @@
     <div id="result-container"></div>
     <div id="attendance-link"></div>
   </div>
-
+  
   <script>
     const quizData = [
-      {
+     {
         question: "体内で栄養素が代謝される際に発生する水は何と呼ばれるか。",
         options: ["間質水", "細胞内液", "代謝水", "尿細管液"],
         answer: 2,
@@ -368,9 +368,18 @@
       }
     ];
 
-      let currentQuestion = 0;
+    let currentQuestion = 0;
     let score = 0;
     let userAnswers = [];
+    let shuffledOptions = [];
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
 
     function loadQuestion() {
       const quizContent = document.getElementById('quiz-content');
@@ -380,8 +389,8 @@
         const question = quizData[currentQuestion];
         document.getElementById('question').textContent = question.question;
 
-        // 選択肢をシャッフルしない
-        const optionsHtml = question.options.map((option, index) => `
+        shuffledOptions = shuffleArray([...question.options]);
+        const optionsHtml = shuffledOptions.map((option, index) => `
           <div class="option" onclick="selectOption(${index})">${option}</div>
         `).join('');
 
@@ -449,8 +458,8 @@
     }
 
     function showResult() {
-      score = quizData.reduce((total, question, index) => 
-        total + (question.shuffledAnswer === userAnswers[index] ? 1 : 0), 0);
+      score = userAnswers.reduce((total, answer, index) => 
+        total + (answer === quizData[index].answer ? 1 : 0), 0);
 
       const resultContainer = document.getElementById('result-container');
       const quizContainer = document.getElementById('quiz-container');
@@ -464,8 +473,7 @@
       `;
 
       quizData.forEach((question, index) => {
-        const userAnswerIndex = userAnswers[index];
-        const isCorrect = question.shuffledAnswer === userAnswerIndex;
+        const isCorrect = userAnswers[index] === question.answer;
         resultHtml += `
           <div class="result-card">
             <h3>問題 ${index + 1}</h3>
@@ -473,7 +481,7 @@
               ${isCorrect ? '正解' : '不正解'}
             </p>
             <p><strong>質問:</strong> ${question.question}</p>
-            <p><strong>あなたの回答:</strong> ${question.options[userAnswerIndex] || '未回答'}</p>
+            <p><strong>あなたの回答:</strong> ${question.options[userAnswers[index]] || '未回答'}</p>
             <p><strong>正解:</strong> ${question.options[question.answer]}</p>
             <p><strong>説明:</strong> ${question.explanation}</p>
           </div>
