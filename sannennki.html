@@ -368,18 +368,9 @@
       }
     ];
 
-    let currentQuestion = 0;
+      let currentQuestion = 0;
     let score = 0;
     let userAnswers = [];
-    let shuffledOptions = [];
-
-    function shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-      return array;
-    }
 
     function loadQuestion() {
       const quizContent = document.getElementById('quiz-content');
@@ -389,15 +380,13 @@
         const question = quizData[currentQuestion];
         document.getElementById('question').textContent = question.question;
 
-        shuffledOptions = shuffleArray([...question.options]);
-
-        const optionsHtml = shuffledOptions.map((option, index) => `
+        // 選択肢をシャッフルしない
+        const optionsHtml = question.options.map((option, index) => `
           <div class="option" onclick="selectOption(${index})">${option}</div>
         `).join('');
 
         document.getElementById('options').innerHTML = optionsHtml;
         document.getElementById('explanation').style.display = 'none';
-        quizData[currentQuestion].shuffledAnswer = shuffledOptions.indexOf(question.options[question.answer]);
 
         quizContent.classList.remove('fade-out');
         quizContent.classList.add('fade-in');
