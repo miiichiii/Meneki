@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>呼吸器クイズ</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f5f5f7;
+      padding: 20px;
+      margin: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1, h2 {
+      font-size: 2.5em;
+      margin-bottom: 30px;
+      text-align: center;
+      color: #1d1d1f;
+    }
+    .quiz-container, .result-card {
+      background-color: #fff;
+      border-radius: 18px;
+      padding: 30px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .question {
+      font-size: 1.3em;
+      margin-bottom: 20px;
+      color: #1d1d1f;
+    }
+    .options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+    .option {
+      background-color: #f5f5f7;
+      border: 2px solid #007aff;
+      border-radius: 12px;
+      padding: 15px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .option:hover {
+      background-color: #e8e8ed;
+    }
+    .option.selected {
+      background-color: #007aff;
+      color: #fff;
+    }
+    .option.disabled {
+      opacity: 0.5;
+      cursor: default;
+      pointer-events: none;
+    }
+    .option::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.1);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .option:active::after {
+      opacity: 1;
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-20px); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-out {
+      animation: fadeOut 0.5s ease-out forwards;
+    }
+    .fade-in {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+    #quiz-content {
+      transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    }
+    .explanation {
+      margin-top: 20px;
+      font-size: 1em;
+      color: #333;
+      display: none;
+      background-color: #e8f5e9;
+      border-left: 5px solid #4caf50;
+      border-radius: 0 12px 12px 0;
+      padding: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      animation: fadeIn 0.5s ease-out;
+    }
+    .explanation-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #4caf50;
+    }
+    .explanation-icon {
+      font-size: 1.5em;
+      margin-right: 10px;
+    }
+    .nav-button {
+      background-color: #007aff;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 24px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 20px;
+      width: 100%;
+    }
+    .nav-button:hover {
+      background-color: #0056b3;
+    }
+    .result-card {
+      margin-bottom: 20px;
+    }
+    .result-card h3 {
+      font-size: 1.2em;
+      margin-bottom: 10px;
+    }
+    .result-status {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .correct {
+      color: #34c759;
+    }
+    .incorrect {
+      color: #ff3b30;
+    }
+    #attendance-link {
+      background-color: #34c759;
+      color: white;
+      padding: 15px;
+      border-radius: 12px;
+      margin-top: 20px;
+      text-align: center;
+      display: none;
+    }
+    #attendance-link a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    #attendance-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>呼吸器クイズ</h1>
+    <div id="quiz-container" class="quiz-container">
+      <div id="quiz-content">
+        <div id="question" class="question"></div>
+        <div id="options" class="options"></div>
+        <div id="explanation" class="explanation"></div>
+      </div>
+      <button id="next" class="nav-button" onclick="nextQuestion()">次の問題</button>
+    </div>
+    <div id="result-container"></div>
+    <div id="attendance-link"></div>
+  </div>
+  
+  <script>
+    const quizData = [
+     {
+    "question": "鼻腔について正しい記述はどれか。",
+    "options": [
+      "鼻中隔によって左右の鼻腔が隔てられている。",
+      "鼻甲介は, 上, 中, 下の2つである。",
+      "鼻涙管は, 唾液を鼻腔に導く。",
+      "キーセルバックス部位は, 鼻腔の後上部にある。"
+    ],
+    "answer": 0,
+    "explanation": "鼻中隔は、鼻腔を左右に隔てる壁のような構造をしています。"
+  },
+  {
+    "question": "副鼻腔について誤っている記述はどれか。",
+    "options": [
+      "頭蓋骨の一部に存在する空洞である。",
+      "鼻腔と交通している。",
+      "粘膜は, 鼻腔の呼吸部と同様である。",
+      "頭蓋骨の重さを増加させる。"
+    ],
+    "answer": 3,
+    "explanation": "副鼻腔は空洞であるため、頭蓋骨の重さを軽減する役割があります。"
+  },
+  {
+    "question": "咽頭について正しい記述はどれか。",
+    "options": [
+      "長さは約20cmである。",
+      "鼻部, 口部, 喉頭部の2部に分かれる。",
+      "耳管の開口部は咽頭喉頭部にある。",
+      "食物と呼吸気の両方の通路となる。"
+    ],
+    "answer": 3,
+    "explanation": "咽頭は、鼻腔、口腔からの空気と、口腔からの食物の両方が通る器官です。"
+  },
+  {
+    "question": "喉頭について正しい記述はどれか。",
+    "options": [
+      "食道から気管に向かう空気の取り入れ口である。",
+      "甲状軟骨は、輪状軟骨の下に位置する。",
+      "声帯ヒダは喉頭の内腔に1対存在する。",
+      "声門の幅は、披裂軟骨の動きによって変化する。"
+    ],
+    "answer": 3,
+    "explanation": "披裂軟骨は声帯に付着しており、その動きによって声門の幅を調節し、声の高低を変化させます。"
+  },
+  {
+    "question": "発声について正しい記述はどれか。",
+    "options": [
+      "声門の下の気圧が下がると声門は閉じる。",
+      "声の強さは、主として声帯の緊張によって調節される。",
+      "声の高さは、声帯の振動数によって決まる。",
+      "声がわりは、思春期の女性にのみみられる。"
+    ],
+    "answer": 2,
+    "explanation": "声帯の振動数が多いほど高い声になり、少ないほど低い声になります。"
+  },
+  {
+    "question": "構音について誤っている記述はどれか。",
+    "options": [
+      "口腔や咽頭で行われる。",
+      "音波を共鳴させて言語音にする。",
+      "舌や口唇の動きが関与する。",
+      "鼻腔は構音に関与しない。"
+    ],
+    "answer": 3,
+    "explanation": "鼻腔は、構音に大きく関与しており、特に「マ行」「ナ行」「ン」などの発音に重要です。"
+  },
+  {
+    "question": "気管について誤っている記述はどれか。",
+    "options": [
+      "左右の気管支に分岐する。",
+      "後ろには食道がある。",
+      "馬蹄形の軟骨で囲まれている。",
+      "内面は粘膜で覆われていない。"
+    ],
+    "answer": 3,
+    "explanation": "気管の内面は粘膜で覆われており、異物の侵入を防いだり、吸い込んだ空気を温めたりする役割があります。"
+  },
+  {
+    "question": "気管支について正しい記述はどれか。",
+    "options": [
+      "右気管支の方が左気管支より細く、長い。",
+      "異物が入りやすいのは左気管支である。",
+      "肺に入ると葉気管支, 区域気管支と分岐する。",
+      "細気管支は軟骨で囲まれている。"
+    ],
+    "answer": 2,
+    "explanation": "気管支は肺に入ると、葉気管支、区域気管支と枝分かれして、最終的に肺胞へとつながります。"
+  },
+  {
+    "question": "肺について誤っている記述はどれか。",
+    "options": [
+      "胸腔の大部分を占めている。",
+      "右肺は上, 中, 下の3葉に分かれる。",
+      "肺尖は横隔膜に接している。",
+      "肺門から気管支や肺動静脈が出入りする。"
+    ],
+    "answer": 2,
+    "explanation": "肺尖は鎖骨の上方に位置し、横隔膜には肺底が接しています。"
+  },
+  {
+    "question": "肺胞について正しい記述はどれか。",
+    "options": [
+      "直径は約2mmである。",
+      "肺胞と肺胞の間には毛細血管はない。",
+      "肺胞上皮細胞は、ガス交換に関与する。",
+      "成人では、左右合わせて約200万個の肺胞がある。"
+    ],
+    "answer": 2,
+    "explanation": "肺胞上皮細胞と毛細血管の間で、酸素と二酸化炭素の交換が行われます。"
+  },
+  {
+    "question": "胸膜について正しい記述はどれか。",
+    "options": [
+      "肺胸膜と壁側胸膜の間には、胸膜腔がある。",
+      "正常な状態では、胸膜腔には約50mLの漿液がある。",
+      "肺胸膜と壁側胸膜の間は陽圧になっている。",
+      "気胸は、胸膜腔に液体が貯留した状態である。"
+    ],
+    "answer": 0,
+    "explanation": "胸膜腔は、肺胸膜と壁側胸膜の間にあるわずかな空間です。"
+  },
+  {
+    "question": "縦隔について正しい記述はどれか。",
+    "options": [
+      "左右の肺に挟まれた部分である。",
+      "上縦隔と下縦隔に区分される。",
+      "心臓は後縦隔に位置する。",
+      "食道は前縦隔に位置する。"
+    ],
+    "answer": 0,
+    "explanation": "縦隔は、左右の肺に挟まれた部分です。"
+  },
+  {
+    "question": "呼吸器の働きで正しいものはどれか。",
+    "options": [
+      "体内に入った異物を分解する。",
+      "血液を体全体に循環させる。",
+      "体内の水分量を調節する。",
+      "酸素を取り込み、二酸化炭素を排出する。"
+    ],
+    "answer": 3,
+    "explanation": "呼吸器は、肺で行われるガス交換を通して、体内に酸素を取り込み、二酸化炭素を排出する役割を担っています。"
+  },
+  {
+    "question": "次のうち、上気道に含まれない器官はどれか。",
+    "options": [
+      "鼻腔",
+      "咽頭",
+      "喉頭",
+      "気管"
+    ],
+    "answer": 3,
+    "explanation": "気管は下気道に分類されます。上気道は、鼻腔、咽頭、喉頭までです。"
+  },
+  {
+    "question": "鼻腔の役割で正しいものはどれか。",
+    "options": [
+      "食物の消化",
+      "吸気の加温・加湿・浄化",
+      "声帯の振動による発声",
+      "ガス交換"
+    ],
+    "answer": 1,
+    "explanation": "鼻腔は、吸い込んだ空気を温め、加湿し、ほこりなどの異物を除去する役割があります。"
+  },
+  {
+    "question": "キーセルバックス部位について正しい記述はどれか。",
+    "options": [
+      "嗅覚を感じる部位である。",
+      "鼻出血を起こしやすい。",
+      "鼻腔の最も奥に位置する。",
+      "副鼻腔の一つである。"
+    ],
+    "answer": 1,
+    "explanation": "キーセルバックス部位は鼻中隔の前下部に位置し、毛細血管が豊富に集まっているため、鼻出血を起こしやすい場所です。"
+  },
+  {
+    "question": "咽頭が関係する器官で誤っているものはどれか。",
+    "options": [
+      "口腔",
+      "食道",
+      "喉頭",
+      "気管支"
+    ],
+    "answer": 3,
+    "explanation": "咽頭は、口腔、食道、喉頭とつながっていますが、気管支とは直接つながっていません。"
+  },
+  {
+    "question": "喉頭の役割で正しいものはどれか。",
+    "options": [
+      "食物の消化",
+      "吸気の加温・加湿",
+      "発声",
+      "ガス交換"
+    ],
+    "answer": 2,
+    "explanation": "喉頭は、声帯をもち、発声を行う器官です。"
+  },
+  {
+    "question": "声帯について正しい記述はどれか。",
+    "options": [
+      "声帯の振動で音の高さが決まる。",
+      "女性の方が男性より声帯が長い。",
+      "声帯は肺に位置している。",
+      "声帯は食べ物を飲み込む時に閉じる。"
+    ],
+    "answer": 0,
+    "explanation": "声帯は喉頭に位置し、呼気によって振動することで音が出ます。声帯の振動数が多いほど音は高く、少ないほど音は低くなります。"
+  },
+  {
+    "question": "気管について正しい記述はどれか。",
+    "options": [
+      "気管支は左右合わせて3本に分かれる。",
+      "気管の内壁には線毛がない。",
+      "気管は食道の前に位置する。",
+      "気管の軟骨は完全な輪状である。"
+    ],
+    "answer": 2,
+    "explanation": "気管は、食道の前に位置し、喉頭から気管支へと空気を送ります。"
+  },
+  {
+    "question": "ガス交換の場となるのはどれか。",
+    "options": [
+      "鼻腔",
+      "気管",
+      "気管支",
+      "肺胞"
+    ],
+    "answer": 3,
+    "explanation": "肺胞は、ガス交換を行うための薄い壁でできた小さな袋状の構造をしています。"
+  },
+  {
+    "question": "肺胞について誤っている記述はどれか。",
+    "options": [
+      "薄い細胞の層でできている。",
+      "表面は毛細血管に覆われている。",
+      "ガス交換を行う。",
+      "肺胞の数は生まれたときから変わらない。"
+    ],
+    "answer": 3,
+    "explanation": "肺胞の数は、成長とともに増加し、成人になるまで増え続けます。"
+  },
+  {
+    "question": "胸膜腔について誤っている記述はどれか。",
+    "options": [
+      "肺胸膜と壁側胸膜の間にある。",
+      "陰圧になっている。",
+      "漿液で満たされている。",
+      "外部と交通している。"
+    ],
+    "answer": 3,
+    "explanation": "胸膜腔は通常、外部とは交通していません。外部と交通すると、気胸などの状態を引き起こす可能性があります。"
+  },
+  {
+    "question": "胸水が貯留することで何が起こるか。",
+    "options": [
+      "肺が膨らみやすくなる。",
+      "呼吸がしづらくなる。",
+      "心臓の動きが活発になる。",
+      "消化が促進される。"
+    ],
+    "answer": 1,
+    "explanation": "胸水が貯留すると、肺が圧迫され、膨らみにくくなるため、呼吸困難を引き起こします。"
+  },
+  {
+    "question": "気胸とはどのような状態か。",
+    "options": [
+      "胸膜腔に空気が入る。",
+      "胸膜腔に液体が貯まる。",
+      "肺胞が破壊される。",
+      "気管支が狭くなる。"
+    ],
+    "answer": 0,
+    "explanation": "気胸は、なんらかの原因で胸膜腔に空気が入り、肺が縮んでしまう状態です。"
+  },
+  {
+    "question": "縦隔に含まれる器官で正しい組み合わせはどれか。",
+    "options": [
+      "心臓, 肺",
+      "肝臓, 膵臓",
+      "心臓, 気管",
+      "胃, 脾臓"
+    ],
+    "answer": 2,
+    "explanation": "縦隔には、心臓、気管、食道、大血管などが含まれます。"
+  },
+  {
+    "question": "上縦隔に位置する器官はどれか。",
+    "options": [
+      "心臓",
+      "胸腺",
+      "横隔膜",
+      "胃"
+    ],
+    "answer": 1,
+    "explanation": "上縦隔には、胸腺、大血管、気管、食道などが含まれます。"
+  },
+  {
+    "question": "前縦隔に位置する器官はどれか。",
+    "options": [
+      "食道",
+      "胸腺",
+      "心臓",
+      "奇静脈"
+    ],
+    "answer": 1,
+    "explanation": "前縦隔には、胸腺の一部やリンパ節などが含まれます。"
+  },
+  {
+    "question": "中縦隔に位置する器官はどれか。",
+    "options": [
+      "気管",
+      "心臓",
+      "食道",
+      "胸大動脈"
+    ],
+    "answer": 1,
+    "explanation": "中縦隔には、心臓、心膜、大血管などが含まれます。"
+  },
+  {
+    "question": "後縦隔に位置する器官はどれか。",
+    "options": [
+      "心臓",
+      "肺",
+      "食道",
+      "胸腺"
+    ],
+    "answer": 2,
+    "explanation": "後縦隔には、食道、胸大動脈、奇静脈、自律神経などが含まれます。"
+  }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let userAnswers = [];
+    let shuffledOptions = [];
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function loadQuestion() {
+      const quizContent = document.getElementById('quiz-content');
+      quizContent.classList.add('fade-out');
+
+      setTimeout(() => {
+        const question = quizData[currentQuestion];
+        document.getElementById('question').textContent = question.question;
+
+        shuffledOptions = shuffleArray([...question.options]);
+        const optionsHtml = shuffledOptions.map((option, index) => `
+          <div class="option" onclick="selectOption(${index})">${option}</div>
+        `).join('');
+
+        document.getElementById('options').innerHTML = optionsHtml;
+        document.getElementById('explanation').style.display = 'none';
+
+        quizContent.classList.remove('fade-out');
+        quizContent.classList.add('fade-in');
+
+        setTimeout(() => {
+          quizContent.classList.remove('fade-in');
+        }, 500);
+      }, 500);
+    }
+
+    function selectOption(index) {
+      const options = document.querySelectorAll('.option');
+      if (options[index].classList.contains('disabled')) {
+        return;
+      }
+
+      options.forEach(option => {
+        option.classList.add('disabled');
+      });
+
+      options[index].classList.add('selected');
+
+      const question = quizData[currentQuestion];
+      const selectedAnswerIndex = question.options.indexOf(shuffledOptions[index]);
+      userAnswers[currentQuestion] = selectedAnswerIndex;
+
+      const explanationEl = document.getElementById('explanation');
+      explanationEl.innerHTML = `
+        <div class="explanation-header">
+          <span class="explanation-icon">💡</span>
+          解説
+        </div>
+        ${question.explanation}
+      `;
+      explanationEl.style.display = 'block';
+
+      if (selectedAnswerIndex === question.answer) {
+        explanationEl.style.backgroundColor = '#e8f5e9';
+        explanationEl.style.borderLeftColor = '#4caf50';
+        options[index].classList.add('correct'); 
+      } else {
+        explanationEl.style.backgroundColor = '#ffebee';
+        explanationEl.style.borderLeftColor = '#f44336';
+      }
+    }
+
+    function nextQuestion() {
+      const selectedOption = document.querySelector('.option.selected');
+      if (selectedOption === null) {
+        alert('選択肢を選んでください');
+        return; 
+      }
+
+      if (currentQuestion < quizData.length - 1) {
+        currentQuestion++;
+        loadQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      score = userAnswers.reduce((total, answer, index) => 
+        total + (answer === quizData[index].answer ? 1 : 0), 0);
+
+      const resultContainer = document.getElementById('result-container');
+      const quizContainer = document.getElementById('quiz-container');
+      quizContainer.style.display = 'none';
+
+      const percentage = (score / quizData.length) * 100;
+      let resultHtml = `
+        <h2>クイズ結果</h2>
+        <p>正解数: ${score} / ${quizData.length}</p>
+        <p>正答率: ${percentage.toFixed(2)}%</p>
+      `;
+
+      quizData.forEach((question, index) => {
+        const isCorrect = userAnswers[index] === question.answer;
+        resultHtml += `
+          <div class="result-card">
+            <h3>問題 ${index + 1}</h3>
+            <p class="result-status ${isCorrect ? 'correct' : 'incorrect'}">
+              ${isCorrect ? '正解' : '不正解'}
+            </p>
+            <p><strong>質問:</strong> ${question.question}</p>
+            <p><strong>あなたの回答:</strong> ${question.options[userAnswers[index]] || '未回答'}</p>
+            <p><strong>正解:</strong> ${question.options[question.answer]}</p>
+            <p><strong>説明:</strong> ${question.explanation}</p>
+          </div>
+        `;
+      });
+
+      resultHtml += `<button class="nav-button" onclick="restartQuiz()">もう一度挑戦する</button>`;
+      resultContainer.innerHTML = resultHtml;
+
+      if (percentage >= 80) {
+        const attendanceLink = document.getElementById('attendance-link');
+        attendanceLink.style.display = 'block';
+        attendanceLink.innerHTML = `
+          <p>おめでとうございます！80%以上の正答率です。</p>
+          <a href="https://forms.gle/3eiZiJwMY9mrWqYs7" target="_blank">出席確認フォームに回答する</a>
+        `;
+      }
+    }
+
+    function restartQuiz() {
+      currentQuestion = 0;
+      score = 0;
+      userAnswers = [];
+      shuffledOptions = [];
+      document.getElementById('quiz-container').style.display = 'block';
+      document.getElementById('result-container').innerHTML = '';
+      document.getElementById('attendance-link').style.display = 'none';
+      loadQuestion();
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
