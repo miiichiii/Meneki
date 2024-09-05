@@ -1,1 +1,569 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>血管の構造クイズ</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f5f5f7;
+      padding: 20px;
+      margin: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1, h2 {
+      font-size: 2.5em;
+      margin-bottom: 30px;
+      text-align: center;
+      color: #1d1d1f;
+    }
+    .quiz-container, .result-card {
+      background-color: #fff;
+      border-radius: 18px;
+      padding: 30px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .question {
+      font-size: 1.3em;
+      margin-bottom: 20px;
+      color: #1d1d1f;
+    }
+    .options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+    .option {
+      background-color: #f5f5f7;
+      border: 2px solid #007aff;
+      border-radius: 12px;
+      padding: 15px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .option:hover {
+      background-color: #e8e8ed;
+    }
+    .option.selected {
+      background-color: #007aff;
+      color: #fff;
+    }
+    .option.disabled {
+      opacity: 0.5;
+      cursor: default;
+      pointer-events: none;
+    }
+    .option::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.1);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .option:active::after {
+      opacity: 1;
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-20px); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-out {
+      animation: fadeOut 0.5s ease-out forwards;
+    }
+    .fade-in {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+    #quiz-content {
+      transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    }
+    .explanation {
+      margin-top: 20px;
+      font-size: 1em;
+      color: #333;
+      display: none;
+      background-color: #e8f5e9;
+      border-left: 5px solid #4caf50;
+      border-radius: 0 12px 12px 0;
+      padding: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      animation: fadeIn 0.5s ease-out;
+    }
+    .explanation-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #4caf50;
+    }
+    .explanation-icon {
+      font-size: 1.5em;
+      margin-right: 10px;
+    }
+    .nav-button {
+      background-color: #007aff;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 24px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 20px;
+      width: 100%;
+    }
+    .nav-button:hover {
+      background-color: #0056b3;
+    }
+    .result-card {
+      margin-bottom: 20px;
+    }
+    .result-card h3 {
+      font-size: 1.2em;
+      margin-bottom: 10px;
+    }
+    .result-status {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .correct {
+      color: #34c759;
+    }
+    .incorrect {
+      color: #ff3b30;
+    }
+    #attendance-link {
+      background-color: #34c759;
+      color: white;
+      padding: 15px;
+      border-radius: 12px;
+      margin-top: 20px;
+      text-align: center;
+      display: none;
+    }
+    #attendance-link a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    #attendance-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>血管の構造クイズ</h1>
+    <div id="quiz-container" class="quiz-container">
+      <div id="quiz-content">
+        <div id="question" class="question"></div>
+        <div id="options" class="options"></div>
+        <div id="explanation" class="explanation"></div>
+      </div>
+      <button id="next" class="nav-button" onclick="nextQuestion()">次の問題</button>
+    </div>
+    <div id="result-container"></div>
+    <div id="attendance-link"></div>
+  </div>
+  
+  <script>
+    const quizData = [
+  {
+  "question": "動脈の中で最も厚い層はどれですか？",
+  "options": [
+    "内膜",
+    "中膜",
+    "外膜",
+    "弾性板"
+  ],
+  "answer": 1,
+  "explanation": "動脈の中膜は最も厚く、平滑筋細胞と弾性板を含み、血管の弾力性と収縮機能を提供します。"
+},
+{
+  "question": "窓付き毛細血管が多く存在する場所はどこですか？",
+  "options": [
+    "肝臓",
+    "筋肉",
+    "腎臓、腸、内分泌腺",
+    "脳"
+  ],
+  "answer": 2,
+  "explanation": "窓付き毛細血管は、腎臓、腸、内分泌腺などで物質の移動が多く必要な場所に存在します。"
+},
+{
+  "question": "静脈の弁が存在する理由として正しいのはどれですか？",
+  "options": [
+    "動脈の血流を増加させるため",
+    "血液を心臓に送り返すため",
+    "血管の圧力を下げるため",
+    "血液を毛細血管に送り込むため"
+  ],
+  "answer": 1,
+  "explanation": "静脈の弁は、血液が重力に逆らって心臓に戻るのを助けるために存在し、逆流を防ぎます。"
+},
+{
+  "question": "側副循環が多く見られる場所として適切なものはどれですか？",
+  "options": [
+    "肝臓",
+    "心臓",
+    "腎臓",
+    "腸間膜や関節周辺"
+  ],
+  "answer": 3,
+  "explanation": "側副循環は、腸間膜や関節周辺でよく見られ、血流が遮断されたときに迂回路を提供します。"
+},
+{
+  "question": "血管の収縮と拡張を調節する神経はどれですか？",
+  "options": [
+    "副交感神経",
+    "交感神経",
+    "骨格神経",
+    "中枢神経"
+  ],
+  "answer": 1,
+  "explanation": "血管の収縮と拡張は、主に交感神経によって調節されています。副交感神経は特定の場所でのみ血管拡張に関与します。"
+},
+{
+  "question": "肺循環において、静脈血を右心室から肺に運ぶ血管はどれですか？",
+  "options": [
+    "肺静脈",
+    "大動脈",
+    "肺動脈",
+    "上大静脈"
+  ],
+  "answer": 2,
+  "explanation": "肺動脈は、右心室から静脈血を肺に運ぶ血管で、ここで酸素を取り込む役割を果たします。"
+},
+{
+  "question": "肺動脈圧は大動脈圧の何分の1ですか？",
+  "options": [
+    "1/2",
+    "1/3",
+    "1/5",
+    "1/10"
+  ],
+  "answer": 2,
+  "explanation": "肺動脈圧は、大動脈圧のおよそ1/5の低い圧力で、肺に血液を送り込みます。"
+},
+{
+  "question": "肺循環において、酸素を豊富に含んだ動脈血を肺から左心房に運ぶ血管はどれですか？",
+  "options": [
+    "肺動脈",
+    "上大静脈",
+    "肺静脈",
+    "冠動脈"
+  ],
+  "answer": 2,
+  "explanation": "肺静脈は、肺で酸素を取り込んだ動脈血を左心房に運ぶ血管です。"
+},
+{
+  "question": "左右の肺動脈は、肺内でどの構造とともに分岐しますか？",
+  "options": [
+    "冠動脈",
+    "気管支",
+    "静脈",
+    "動脈"
+  ],
+  "answer": 1,
+  "explanation": "肺動脈は肺内で気管支とともに分岐し、酸素の交換が行われる肺の各領域に血液を送ります。"
+},
+{
+  "question": "肺静脈が左心房に流入する本数は次のうちどれですか？",
+  "options": [
+    "1本",
+    "2本",
+    "3本",
+    "4本"
+  ],
+  "answer": 3,
+  "explanation": "肺静脈は左右それぞれ2本ずつ、合計4本が左心房に流入します。"
+},
+{
+  "question": "上行大動脈から分岐し、心臓に血液を供給する動脈はどれですか？",
+  "options": [
+    "鎖骨下動脈",
+    "冠状動脈",
+    "上腸間膜動脈",
+    "腕頭動脈"
+  ],
+  "answer": 1,
+  "explanation": "上行大動脈の大動脈洞から右冠状動脈と左冠状動脈が分岐し、心臓に血液を供給します。"
+},
+{
+  "question": "大動脈弓から分岐する3本の動脈のうち、最初に分岐する動脈はどれですか？",
+  "options": [
+    "左総頸動脈",
+    "左鎖骨下動脈",
+    "右総頸動脈",
+    "腕頭動脈"
+  ],
+  "answer": 3,
+  "explanation": "大動脈弓から最初に分岐するのは腕頭動脈で、そこから右総頸動脈と右鎖骨下動脈が分岐します。"
+},
+{
+  "question": "外頸動脈が血液を供給する場所はどこですか？",
+  "options": [
+    "脳と眼",
+    "顔面と頭皮",
+    "腎臓と脾臓",
+    "胃と肝臓"
+  ],
+  "answer": 1,
+  "explanation": "外頸動脈は顔面と頭皮に血液を供給します。一方、内頸動脈は脳と眼に血液を送ります。"
+},
+{
+  "question": "椎骨動脈が血液を供給する部位はどこですか？",
+  "options": [
+    "脳",
+    "肝臓",
+    "腎臓",
+    "腸"
+  ],
+  "answer": 0,
+  "explanation": "鎖骨下動脈から分岐する椎骨動脈は、脳に血液を供給します。"
+},
+{
+  "question": "腹腔動脈が血液を供給する臓器の組み合わせとして正しいものはどれですか？",
+  "options": [
+    "肝臓、脾臓、胃",
+    "腎臓、小腸、胃",
+    "脳、肺、心臓",
+    "胃、膵臓、大腸"
+  ],
+  "answer": 0,
+  "explanation": "腹腔動脈は、肝臓、脾臓、胃、十二指腸などに血液を供給します。"
+},
+{
+  "question": "上大静脈はどの静脈の合流によって形成されますか？",
+  "options": [
+    "内頸静脈と橈骨静脈",
+    "腕頭静脈と腋窩静脈",
+    "腕頭静脈の合流",
+    "外頸静脈と鎖骨下静脈"
+  ],
+  "answer": 2,
+  "explanation": "上大静脈は、左右の腕頭静脈の合流によって形成され、右心房に血液を送ります。"
+},
+{
+  "question": "下大静脈に血液を流入させる静脈として正しいのはどれですか？",
+  "options": [
+    "鎖骨下静脈",
+    "奇静脈",
+    "総腸骨静脈",
+    "内頸静脈"
+  ],
+  "answer": 2,
+  "explanation": "下大静脈は、左右の総腸骨静脈の合流により形成され、さらに腎静脈や肝静脈などの血液も集めて右心房に流入します。"
+},
+{
+  "question": "頭頸部において、脳からの血液を受ける大きな静脈洞はどれですか？",
+  "options": [
+    "内頸静脈",
+    "外頸静脈",
+    "硬膜静脈洞",
+    "鎖骨下静脈"
+  ],
+  "answer": 2,
+  "explanation": "硬膜静脈洞は、頭蓋内で脳からの血液を受け、S状静脈洞を経て内頸静脈に集まります。"
+},
+{
+  "question": "下肢の皮静脈で、足背から始まり大腿静脈に注ぐ静脈はどれですか？",
+  "options": [
+    "小伏在静脈",
+    "大伏在静脈",
+    "外腸骨静脈",
+    "後脛骨静脈"
+  ],
+  "answer": 1,
+  "explanation": "大伏在静脈は、足背から始まり、最終的に鼠径靭帯のすぐ下で大腿静脈に合流します。"
+},
+{
+  "question": "骨盤内臓や殿部・陰部の血液を集める静脈はどれですか？",
+  "options": [
+    "外腸骨静脈",
+    "大腿静脈",
+    "内腸骨静脈",
+    "小伏在静脈"
+  ],
+  "answer": 2,
+  "explanation": "内腸骨静脈は、骨盤内臓や殿部、陰部からの血液を集め、総腸骨静脈へと流れ込みます。"
+},
+{
+  "question": "門脈系において、門脈はどの静脈の合流によって形成されますか？",
+  "options": [
+    "内頸静脈と鎖骨下静脈",
+    "脾静脈と上・下腸間膜静脈",
+    "大腿静脈と外腸骨静脈",
+    "腎静脈と肝静脈"
+  ],
+  "answer": 1,
+  "explanation": "門脈は、脾静脈と上腸間膜静脈、下腸間膜静脈が合流して形成され、肝臓に血液を運びます。"
+}
+];
 
+    let currentQuestion = 0;
+    let score = 0;
+    let userAnswers = [];
+    let shuffledOptions = [];
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function loadQuestion() {
+      const quizContent = document.getElementById('quiz-content');
+      quizContent.classList.add('fade-out');
+
+      setTimeout(() => {
+        const question = quizData[currentQuestion];
+        document.getElementById('question').textContent = question.question;
+
+        shuffledOptions = shuffleArray([...question.options]);
+        const optionsHtml = shuffledOptions.map((option, index) => `
+          <div class="option" onclick="selectOption(${index})">${option}</div>
+        `).join('');
+
+        document.getElementById('options').innerHTML = optionsHtml;
+        document.getElementById('explanation').style.display = 'none';
+
+        quizContent.classList.remove('fade-out');
+        quizContent.classList.add('fade-in');
+
+        setTimeout(() => {
+          quizContent.classList.remove('fade-in');
+        }, 500);
+      }, 500);
+    }
+
+    function selectOption(index) {
+      const options = document.querySelectorAll('.option');
+      if (options[index].classList.contains('disabled')) {
+        return;
+      }
+
+      options.forEach(option => {
+        option.classList.add('disabled');
+      });
+
+      options[index].classList.add('selected');
+
+      const question = quizData[currentQuestion];
+      const selectedAnswerIndex = question.options.indexOf(shuffledOptions[index]);
+      userAnswers[currentQuestion] = selectedAnswerIndex;
+
+      const explanationEl = document.getElementById('explanation');
+      explanationEl.innerHTML = `
+        <div class="explanation-header">
+          <span class="explanation-icon">💡</span>
+          解説
+        </div>
+        ${question.explanation}
+      `;
+      explanationEl.style.display = 'block';
+
+      if (selectedAnswerIndex === question.answer) {
+        explanationEl.style.backgroundColor = '#e8f5e9';
+        explanationEl.style.borderLeftColor = '#4caf50';
+        options[index].classList.add('correct'); 
+      } else {
+        explanationEl.style.backgroundColor = '#ffebee';
+        explanationEl.style.borderLeftColor = '#f44336';
+      }
+    }
+
+    function nextQuestion() {
+      const selectedOption = document.querySelector('.option.selected');
+      if (selectedOption === null) {
+        alert('選択肢を選んでください');
+        return; 
+      }
+
+      if (currentQuestion < quizData.length - 1) {
+        currentQuestion++;
+        loadQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      score = userAnswers.reduce((total, answer, index) => 
+        total + (answer === quizData[index].answer ? 1 : 0), 0);
+
+      const resultContainer = document.getElementById('result-container');
+      const quizContainer = document.getElementById('quiz-container');
+      quizContainer.style.display = 'none';
+
+      const percentage = (score / quizData.length) * 100;
+      let resultHtml = `
+        <h2>クイズ結果</h2>
+        <p>正解数: ${score} / ${quizData.length}</p>
+        <p>正答率: ${percentage.toFixed(2)}%</p>
+      `;
+
+      quizData.forEach((question, index) => {
+        const isCorrect = userAnswers[index] === question.answer;
+        resultHtml += `
+          <div class="result-card">
+            <h3>問題 ${index + 1}</h3>
+            <p class="result-status ${isCorrect ? 'correct' : 'incorrect'}">
+              ${isCorrect ? '正解' : '不正解'}
+            </p>
+            <p><strong>質問:</strong> ${question.question}</p>
+            <p><strong>あなたの回答:</strong> ${question.options[userAnswers[index]] || '未回答'}</p>
+            <p><strong>正解:</strong> ${question.options[question.answer]}</p>
+            <p><strong>説明:</strong> ${question.explanation}</p>
+          </div>
+        `;
+      });
+
+      resultHtml += `<button class="nav-button" onclick="restartQuiz()">もう一度挑戦する</button>`;
+      resultContainer.innerHTML = resultHtml;
+
+      if (percentage >= 80) {
+        const attendanceLink = document.getElementById('attendance-link');
+        attendanceLink.style.display = 'block';
+        attendanceLink.innerHTML = `
+          <p>おめでとうございます！80%以上の正答率です。</p>
+          <a href="https://forms.gle/UYPNqR844k84masN9" target="_blank">出席確認フォームに回答する</a>
+        `;
+      }
+    }
+
+    function restartQuiz() {
+      currentQuestion = 0;
+      score = 0;
+      userAnswers = [];
+      shuffledOptions = [];
+      document.getElementById('quiz-container').style.display = 'block';
+      document.getElementById('result-container').innerHTML = '';
+      document.getElementById('attendance-link').style.display = 'none';
+      loadQuestion();
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
